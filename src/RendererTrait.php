@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance;
 
-use DecodeLabs\Exceptional;
 use DecodeLabs\Monarch;
 use DecodeLabs\Nuance\Entity;
 use DecodeLabs\Nuance\Entity\Binary;
@@ -29,12 +28,12 @@ use DecodeLabs\Nuance\Entity\NativeString;
 use DecodeLabs\Nuance\Entity\Traceable;
 use DecodeLabs\Nuance\Structure\ClassList;
 use DecodeLabs\Nuance\Structure\Container;
-use DecodeLabs\Nuance\Structure\LazyType;
 use DecodeLabs\Nuance\Structure\ListStyle;
 use DecodeLabs\Nuance\Structure\Property;
 use DecodeLabs\Nuance\Structure\Section;
 use DecodeLabs\Remnant\Frame;
 use DecodeLabs\Remnant\Trace;
+use UnexpectedValueException;
 
 /**
  * @phpstan-require-implements Renderer
@@ -142,7 +141,7 @@ trait RendererTrait
             return $this->renderObject($value, $level, $classes);
         }
 
-        throw Exceptional::UnexpectedValue(
+        throw new UnexpectedValueException(
             'Invalid value type for rendering: ' . get_debug_type($value)
         );
     }
@@ -244,7 +243,7 @@ trait RendererTrait
 
         $output = preg_replace_callback('/[[:cntrl:]]/u', function ($matches) {
             if (false === ($packed = unpack("H*", $matches[0]))) {
-                throw Exceptional::UnexpectedValue('Unable to unpack control characters');
+                throw new UnexpectedValueException('Unable to unpack control characters');
             }
 
             $hex = implode($packed);

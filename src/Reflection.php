@@ -11,7 +11,6 @@ namespace DecodeLabs\Nuance;
 
 use DateInterval;
 use DateTime;
-use DecodeLabs\Exceptional;
 use Reflection as ReflectionRoot;
 use ReflectionClass;
 use ReflectionClassConstant;
@@ -23,6 +22,7 @@ use ReflectionParameter;
 use ReflectionProperty;
 use ReflectionType;
 use ReflectionUnionType;
+use RuntimeException;
 use UnitEnum;
 
 class Reflection
@@ -285,8 +285,8 @@ class Reflection
 
             /** @phpstan-ignore-next-line */
             if (false === $date2->add($interval)) {
-                throw Exceptional::Runtime(
-                    message: 'Unable to create date from interval'
+                throw new RuntimeException(
+                    'Unable to create date from interval'
                 );
             }
 
