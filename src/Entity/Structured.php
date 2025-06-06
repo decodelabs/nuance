@@ -13,5 +13,5 @@ use DecodeLabs\Nuance\Entity;
 
 interface Structured extends Entity
 {
-    public bool $open { get; }
+    public bool $open { get; set; }
 }
