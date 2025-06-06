@@ -191,17 +191,32 @@ class Inspector
                     break;
                 }
 
-                if(!in_array($parent->getName(), $extensions)) {
-                    $extensions[] = $parent->getName();
+                $parentName = $parent->getName();
+
+                if(
+                    !str_contains($parentName, '@anonymous') &&
+                    !in_array($parentName, $extensions)
+                ) {
+                    $extensions[] = $parentName;
                 }
 
                 $refBase = $parent;
             }
 
+            $root = [];
+
+            if(!str_contains($class, '@anonymous')) {
+                $root[] = $class;
+            }
+
             $extensions = array_unique(
-                array_merge([get_class($value)], array_reverse($extensions), array_reverse($interfaces))
+                array_merge($root, array_reverse($extensions), array_reverse($interfaces))
             );
             $extensionClass = null;
+
+            usort($extensions, function($a, $b) {
+                return count(explode('\\', $b)) <=> count(explode('\\', $a));
+            });
 
             foreach($extensions as $subClass) {
                 $subClass = NativeObject::class . '\\' . $subClass;

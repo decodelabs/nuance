@@ -20,6 +20,7 @@
         "php-ds/php-ds": "^1.5"
     },
     "conflict": {
+        "decodelabs/exceptional": "<0.6.1",
         "decodelabs/monarch": "<0.1.3"
     },
     "autoload": {

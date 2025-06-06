@@ -12,3 +12,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Converted Glitch Entities to managed Nuance Entities
 - Added Renderer Container structure
 - Removed Exceptional dependency
+- Added Exceptional custom Entity
