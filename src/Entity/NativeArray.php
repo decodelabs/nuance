@@ -43,6 +43,7 @@ class NativeArray implements Value, Structured
     }
 
     protected(set) bool $referenced = false;
+    public int $referenceId = 0;
 
     /**
      * @param array<mixed> $value
@@ -67,5 +68,15 @@ class NativeArray implements Value, Structured
         }
 
         return self::$cookieKey;
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function getPreparedValue(): array
+    {
+        $output = $this->value;
+        unset($output[self::getCookieKey()]);
+        return $output;
     }
 }

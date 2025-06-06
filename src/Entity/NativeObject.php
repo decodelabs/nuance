@@ -9,9 +9,11 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity;
 
-use DecodeLabs\Nuance\LazyType;
-use DecodeLabs\Nuance\Property;
-use DecodeLabs\Nuance\PropertyVisibility;
+use DecodeLabs\Nuance\Structure\LazyType;
+use DecodeLabs\Nuance\Structure\Property;
+use DecodeLabs\Nuance\Structure\PropertyVisibility;
+use DecodeLabs\Monarch;
+use DecodeLabs\Nuance\Structure\SectionMap;
 use ReflectionClass;
 use ReflectionObject;
 use Throwable;
@@ -21,7 +23,7 @@ class NativeObject implements Structured
     use StructuredTrait;
 
     public string $id {
-        get => $this->id ??= str_replace(['.', '\\'], '-', uniqid($this->class . '-', true));
+        get => $this->id ??= str_replace(['.', '\\', '~', '@'], '-', uniqid($this->class . '-', true));
     }
 
     public string $displayName {
@@ -111,6 +113,20 @@ class NativeObject implements Structured
      */
     public array $values = [];
     public bool $valueKeys = true;
+
+    public mixed $value {
+        get => $this->values[array_key_first($this->values)] ?? null;
+        set {
+            $this->values = [$value];
+            $this->valueKeys = false;
+        }
+    }
+
+    public bool $referenced = false;
+
+    public SectionMap $sections {
+        get => $this->sections ??= new SectionMap();
+    }
 
     public function __construct(
         object $object,
@@ -246,5 +262,39 @@ class NativeObject implements Structured
     public function getExtensionClasses(): array
     {
         return [$this->class] + $this->parents + $this->interfaces;
+    }
+
+
+
+    /**
+     * @return array<string,string|array<string>>
+     */
+    public function getInfoValues(): array
+    {
+        $info['class'] = $this->class;
+
+        if($file = $this->file) {
+            if(class_exists(Monarch::class)) {
+                $file = Monarch::$paths->prettify($file);
+            }
+
+            $info['location'] = $file . ' : ' . $this->startLine;
+        }
+
+        if(!empty($this->parents)) {
+            $info['parents'] = $this->parents;
+        }
+
+        if(!empty($this->interfaces)) {
+            $info['interfaces'] = $this->interfaces;
+        }
+
+        if(!empty($this->traits)) {
+            $info['traits'] = $this->traits;
+        }
+
+        $info['hash'] = $this->hash;
+
+        return $info;
     }
 }

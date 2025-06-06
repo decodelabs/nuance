@@ -24,7 +24,6 @@ class DOMAttr extends NativeObject
             value: $attr->name
         );
 
-        $this->values[0] = $attr->value;
-        $this->valueKeys = false;
+        $this->value = $attr->value;
     }
 }

@@ -21,6 +21,7 @@ use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Entity\NativeResource;
 use DecodeLabs\Nuance\Entity\NativeString;
 use DecodeLabs\Nuance\SensitiveProperty;
+use DecodeLabs\Nuance\Structure\PropertyVisibility;
 use ReflectionClass;
 use SensitiveParameterValue;
 
@@ -31,8 +32,24 @@ class Inspector
      */
     protected array $extensions = [];
 
+    /**
+     * @var array<string,int>
+     */
+    protected array $arrayIds = [];
+
+    /**
+     * @var array<int,string>
+     */
+    protected array $objectIds = [];
+
+    public function reset(): void
+    {
+        $this->arrayIds = [];
+        $this->objectIds = [];
+    }
+
     public function inspect(
-        mixed &$value
+        mixed $value
     ): Entity {
         // Entity
         if($value instanceof Entity) {
@@ -97,22 +114,39 @@ class Inspector
 
         // Array
         if (is_array($value)) {
-            return new NativeArray($value);
+            $entity = new NativeArray($value);
+
+            if(!isset($this->arrayIds[$entity->hash])) {
+                $this->arrayIds[$entity->hash] = count($this->arrayIds);
+            }
+
+            $entity->referenceId = $this->arrayIds[$entity->hash];
+            return $entity;
         }
 
         // Object
         if (is_object($value)) {
-            return $this->inspectObject($value);
+            $entity = $this->inspectObject($value);
+
+            if(!isset($this->objectIds[$entity->objectId])) {
+                $entity->referenced = false;
+                $this->objectIds[$entity->objectId] = $entity->id;
+            } else {
+                $entity->referenced = true;
+                $entity->id = $this->objectIds[$entity->objectId];
+            }
+
+            return $entity;
         }
 
         return new NativeString(Coercion::toString($value));
     }
 
-    public function inspectObject(
+    private function inspectObject(
         object $value
     ): NativeObject {
         if ($value instanceof Dumpable) {
-            return $value->nuanceDump();
+            return $value->toNuanceEntity();
         }
 
         // Extension

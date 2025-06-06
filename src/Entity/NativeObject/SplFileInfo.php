@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
-use DecodeLabs\Glitch\Proxy as Glitch;
+use DecodeLabs\Monarch;
 use DecodeLabs\Nuance\Reflection;
 use DecodeLabs\Nuance\Entity\NativeObject;
 use SplFileInfo as SplFileInfoObject;
@@ -21,7 +21,13 @@ class SplFileInfo extends NativeObject
     ) {
         parent::__construct($file);
 
-        $this->text = Glitch::normalizePath($file->getPathname());
+        $path = $file->getPathname();
+
+        if(class_exists(Monarch::class)) {
+            $path = Monarch::$paths->prettify($path);
+        }
+
+        $this->text = $path;
         $this->itemName = basename($file->getPathname());
         $this->meta['type'] = $type = $file->getType();
 

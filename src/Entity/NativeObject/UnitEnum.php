@@ -26,8 +26,7 @@ class UnitEnum extends NativeObject
             if(is_int($enum->value)) {
                 $this->length = $enum->value;
             } else {
-                $this->values[0] = $enum->value;
-                $this->valueKeys = false;
+                $this->value = $enum->value;
             }
         }
     }

@@ -8,3 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Built Inspector structure
 - Implemented Dumpable interface
 - Ported SensitiveProperty and LazyType
+- Ported reusable parts of Glitch Renderer system
+- Converted Glitch Entities to managed Nuance Entities
+- Added Renderer Container structure

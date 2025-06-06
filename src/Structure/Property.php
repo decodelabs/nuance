@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Nuance;
+namespace DecodeLabs\Nuance\Structure;
 
 class Property
 {

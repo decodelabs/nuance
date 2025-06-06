@@ -13,18 +13,22 @@ class ConstOption implements Value, Structured
 {
     use StructuredTrait;
 
-    public string|bool|int|float|null $value;
+    /**
+     * @var string|bool|int|float|array<mixed>|null
+     */
+    public string|bool|int|float|array|null $value;
 
     /**
-     * @var array<string,string|bool|int|float|null>
+     * @var array<string,string|bool|int|float|array<mixed>|null>
      */
     protected(set) array $options = [];
 
     /**
+     * @param string|bool|int|float|array<mixed>|null $value
      * @param list<string> $constNames
      */
     public function __construct(
-        string|bool|int|float|null $value,
+        string|bool|int|float|array|null $value,
         array $constNames = []
     ) {
         $this->value = $value;

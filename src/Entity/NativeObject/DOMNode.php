@@ -43,7 +43,6 @@ class DOMNode extends NativeObject
             'XML_NAMESPACE_DECL_NODE'
         ]));
 
-        $this->values[0] = $node->nodeValue;
-        $this->valueKeys = false;
+        $this->value = $node->nodeValue;
     }
 }

@@ -9,10 +9,11 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
-use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Monarch;
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Entity\Traceable;
 use DecodeLabs\Nuance\Inspector;
+use DecodeLabs\Remnant\Trace;
 use Throwable as ThrowableObject;
 
 class Throwable extends NativeObject implements Traceable
@@ -25,7 +26,7 @@ class Throwable extends NativeObject implements Traceable
         parent::__construct($exception);
 
         $this->text = $exception->getMessage();
-        $this->file = $exception->getFile();
+        $this->file = $file = $exception->getFile();
         $this->startLine = $exception->getLine();
         $this->stackTrace = Trace::fromException($exception);
 
@@ -49,13 +50,18 @@ class Throwable extends NativeObject implements Traceable
                 'code',
                 'previous',
                 'message',
-                'file',
-                'line',
                 'trace',
+                'stackFrame',
                 'stackTrace',
                 'string',
                 'xdebug_message'
             ]
         );
+
+        if(class_exists(Monarch::class)) {
+            $file = Monarch::$paths->prettify($file);
+        }
+
+        $this->setProperty('file', $file, 'private');
     }
 }

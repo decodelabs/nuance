@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity;
 
-use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Nuance\Entity;
+use DecodeLabs\Remnant\Trace;
 
 interface Traceable extends Entity
 {

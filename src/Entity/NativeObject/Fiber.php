@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
-use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Entity\Traceable;
+use DecodeLabs\Remnant\Trace;
 use Fiber as FiberObject;
 use ReflectionFiber;
 
@@ -47,8 +47,7 @@ class Fiber extends NativeObject implements Traceable
         ];
 
         if($fiber->isTerminated()) {
-            $this->valueKeys = false;
-            $this->values['return'] = $fiber->getReturn();
+            $this->value = $fiber->getReturn();
         }
     }
 }

@@ -13,5 +13,5 @@ use DecodeLabs\Nuance\Entity\NativeObject;
 
 interface Dumpable
 {
-    public function nuanceDump(): NativeObject;
+    public function toNuanceEntity(): NativeObject;
 }
