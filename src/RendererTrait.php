@@ -493,7 +493,10 @@ trait RendererTrait
             );
         }
 
-        $name[] = $this->renderClassName($entity->displayName);
+        $name[] = $this->renderClassName(
+            $entity->displayName,
+            ClassList::of($entity->sensitive ? 'sensitive' : null)
+        );
 
         if($entity->itemName !== null) {
             $name[] = $this->renderGrammar('~');

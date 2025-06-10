@@ -299,7 +299,7 @@ class Html implements Renderer
         return $this->el(
             tag: 'span',
             content: $this->renderSignatureFqn($class),
-            classes: ClassList::of('signature', 'source')
+            classes: ClassList::of('signature', 'source', $classes)
         );
     }
 
@@ -396,6 +396,7 @@ class Html implements Renderer
         $output = $header = $buttons = [];
 
         $container->sortSections();
+
         $header[] = $this->el(
             tag: 'label',
             content: $container->renderedName,
@@ -407,6 +408,7 @@ class Html implements Renderer
 
         $openId = $container->getOpenId();
         $hasOpenSection = false;
+        $hasBrackets = !$container->sensitive && !empty($container->sections);
 
         foreach($container->sections as $section) {
             if($section->open) {
@@ -444,7 +446,7 @@ class Html implements Renderer
             );
         }
 
-        if(!empty($container->sections)) {
+        if($hasBrackets) {
             $header[] = $this->renderGrammar('{');
         }
 
@@ -456,12 +458,9 @@ class Html implements Renderer
         }
 
         if($container->sensitive) {
-            $header[] = $this->renderIdentifier(
-                'sensitive',
-                ClassList::of('sensitive')
-            );
-
-            $header[] = $this->renderGrammar('}');
+            if($hasBrackets) {
+                $header[] = $this->renderGrammar('}');
+            }
         } else {
             $header[] = $this->el(
                 tag: 'input',
