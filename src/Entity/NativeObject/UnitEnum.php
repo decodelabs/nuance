@@ -20,6 +20,7 @@ class UnitEnum extends NativeObject
     ) {
         parent::__construct($enum);
 
+        $this->open = false;
         $this->itemName = $enum->name;
 
         if($enum instanceof BackedEnum) {
