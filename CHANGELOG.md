@@ -5,7 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+--
+
+---
+
+### [v0.1.6](https://github.com/decodelabs/nuance/commits/v0.1.6) - 17th June 2025
+
 - Enums render closed by default
+
+[Full list of changes](https://github.com/decodelabs/nuance/compare/v0.1.5...v0.1.6)
 
 ---
 
