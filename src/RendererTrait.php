@@ -432,7 +432,7 @@ trait RendererTrait
     ): string {
         $container = new Container(
             type: 'array',
-            id: 'array-'.$entity->hash,
+            id: uniqid('array-'),
             open: $entity->open && $level < 3
         );
 
