@@ -23,7 +23,7 @@ composer require decodelabs/nuance
 
 ## Usage
 
-This library is intended to be integrated into larger debug tools - it is the heart of the inspection and rendering functionality, but does not provide a user interface by itself. See [Glitch](/decodelabs/glitch) to use Nuance in a user-friendly way.
+This library is intended to be integrated into larger debug tools - it is the heart of the inspection and rendering functionality, but does not provide a user interface by itself. See [Glitch](https://github.com/decodelabs/glitch) to use Nuance in a user-friendly way.
 
 Load a `Renderer` and pass a value - Nuance will inspect it and any nested values and return a string representation of the value in the format denoted by the Renderer:
 
