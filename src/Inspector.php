@@ -42,6 +42,11 @@ class Inspector
      */
     protected array $objectIds = [];
 
+    /**
+     * @var array<int>
+     */
+    protected array $objectStack = [];
+
     public function reset(): void
     {
         $this->arrayIds = [];
@@ -126,7 +131,19 @@ class Inspector
 
         // Object
         if (is_object($value)) {
+            $objectId = spl_object_id($value);
+
+            if(in_array($objectId, $this->objectStack)) {
+                $entity = new NativeObject($value);
+                $entity->referenced = true;
+                return $entity;
+            }
+
+            $this->objectStack[] = $objectId;
+
             $entity = $this->inspectObject($value);
+
+            array_pop($this->objectStack);
 
             if(!isset($this->objectIds[$entity->objectId])) {
                 $entity->referenced = false;
@@ -274,6 +291,11 @@ class Inspector
                     continue;
                 } elseif ($entity->hasProperty($name)) {
                     continue;
+                } elseif(
+                    $property->isVirtual() &&
+                    empty($property->getAttributes(DumpableVirtualProperty::class))
+                ) {
+                    continue;
                 }
 
 
@@ -286,7 +308,7 @@ class Inspector
 
                 // Check sensitive
                 if (!empty($property->getAttributes(SensitiveProperty::class))) {
-                    $value = new SensitiveParameterValue($value);
+                    $value = new SensitiveParameterValue($object);
                 }
 
                 if ($asMeta) {
