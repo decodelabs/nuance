@@ -5,9 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+--
+
+---
+
+### [v0.1.7](https://github.com/decodelabs/nuance/commits/v0.1.7) - 7th July 2025
 
 - Return object reference if already inspected
 - Only dump virtual properties if marked with DumpableVirtualProperty attribute
+
+[Full list of changes](https://github.com/decodelabs/nuance/compare/v0.1.6...v0.1.7)
 
 ---
 
