@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
+use DatePeriod as DatePeriodObject;
+use DateTimeInterface;
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Inspector;
 use DecodeLabs\Nuance\Reflection;
-use DatePeriod as DatePeriodObject;
-use DateTimeInterface;
 
 class DatePeriod extends NativeObject
 {

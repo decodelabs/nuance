@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
 use DecodeLabs\Monarch;
-use DecodeLabs\Nuance\Reflection;
 use DecodeLabs\Nuance\Entity\NativeObject;
+use DecodeLabs\Nuance\Reflection;
 use SplFileInfo as SplFileInfoObject;
 
 class SplFileInfo extends NativeObject
@@ -23,7 +23,7 @@ class SplFileInfo extends NativeObject
 
         $path = $file->getPathname();
 
-        if(class_exists(Monarch::class)) {
+        if (class_exists(Monarch::class)) {
             $path = Monarch::$paths->prettify($path);
         }
 
@@ -31,7 +31,7 @@ class SplFileInfo extends NativeObject
         $this->itemName = basename($file->getPathname());
         $this->meta['type'] = $type = $file->getType();
 
-        if($type === 'link') {
+        if ($type === 'link') {
             $this->meta['target'] = $file->getLinkTarget();
         }
 

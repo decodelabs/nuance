@@ -17,7 +17,7 @@ use ReflectionFiber;
 
 class Fiber extends NativeObject implements Traceable
 {
-    protected(set) ?Trace $stackTrace = null;
+    public protected(set) ?Trace $stackTrace = null;
 
     /**
      * @param FiberObject<mixed,mixed,mixed,mixed> $fiber
@@ -27,7 +27,7 @@ class Fiber extends NativeObject implements Traceable
     ) {
         parent::__construct($fiber);
 
-        if(
+        if (
             $fiber->isStarted() &&
             !$fiber->isTerminated()
         ) {
@@ -46,7 +46,7 @@ class Fiber extends NativeObject implements Traceable
             'terminated' => $fiber->isTerminated(),
         ];
 
-        if($fiber->isTerminated()) {
+        if ($fiber->isTerminated()) {
             $this->value = $fiber->getReturn();
         }
     }

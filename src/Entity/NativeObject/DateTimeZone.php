@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
+use DateTimeZone as DateTimeZoneObject;
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Inspector;
-use DateTimeZone as DateTimeZoneObject;
 
 class DateTimeZone extends NativeObject
 {

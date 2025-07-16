@@ -26,7 +26,7 @@ class ReflectionGenerator extends NativeObject
 
         $this->itemName = $function->getShortName() ?: null;
 
-        if(str_starts_with((string)$this->itemName, '{closure')) {
+        if (str_starts_with((string)$this->itemName, '{closure')) {
             $this->itemName = 'closure';
         }
 

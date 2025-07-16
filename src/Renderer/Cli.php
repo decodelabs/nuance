@@ -9,26 +9,15 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Renderer;
 
-use DecodeLabs\Nuance\Entity;
 use DecodeLabs\Nuance\Entity\Binary;
-use DecodeLabs\Nuance\Entity\ClassString;
-use DecodeLabs\Nuance\Entity\ConstOption;
-use DecodeLabs\Nuance\Entity\FlagSet;
-use DecodeLabs\Nuance\Entity\NativeArray;
 use DecodeLabs\Nuance\Entity\NativeBoolean;
 use DecodeLabs\Nuance\Entity\NativeFloat;
 use DecodeLabs\Nuance\Entity\NativeInteger;
-use DecodeLabs\Nuance\Entity\NativeNull;
-use DecodeLabs\Nuance\Entity\NativeResource;
-use DecodeLabs\Nuance\Entity\NativeObject;
-use DecodeLabs\Nuance\Entity\NativeObject\DecodeLabs\Remnant\Trace as TraceEntity;
 use DecodeLabs\Nuance\Entity\NativeString;
-use DecodeLabs\Nuance\Entity\Traceable;
 use DecodeLabs\Nuance\Renderer;
+use DecodeLabs\Nuance\Renderer\Cli\FormatterTrait;
 use DecodeLabs\Nuance\RendererTrait;
 use DecodeLabs\Nuance\Structure\ClassList;
-use DecodeLabs\Nuance\Renderer\Cli\FormatterTrait;
-
 
 class Cli implements Renderer
 {
@@ -114,32 +103,32 @@ class Cli implements Renderer
         $classes = ClassList::of($classes);
         $options = [];
 
-        if($classes->isEmpty()) {
+        if ($classes->isEmpty()) {
             $classes->add('values', 'public');
         }
 
         $color = 'white';
         $output = '';
 
-        if($classes->has('info')) {
+        if ($classes->has('info')) {
             $color = 'cyan';
-        } else if($classes->has('meta')) {
+        } elseif ($classes->has('meta')) {
             $color = 'white';
-        } else if($classes->has('keyword')) {
+        } elseif ($classes->has('keyword')) {
             $color = 'green';
-        } else if($classes->has('sensitive')) {
+        } elseif ($classes->has('sensitive')) {
             $color = 'red';
             $options[] = 'bold';
-        } else if($classes->has('props')) {
+        } elseif ($classes->has('props')) {
             $color = 'white';
 
-            if($classes->has('protected')) {
+            if ($classes->has('protected')) {
                 $output .= $this->format(
                     content: '*',
                     foreground: 'blue',
                     options: 'bold'
                 );
-            } else if($classes->has('private')) {
+            } elseif ($classes->has('private')) {
                 $output .= $this->format(
                     content: '!',
                     foreground: 'red',
@@ -147,14 +136,14 @@ class Cli implements Renderer
                 );
             }
 
-            if($classes->has('virtual')) {
+            if ($classes->has('virtual')) {
                 $output .= $this->format(
                     content: '%',
                     foreground: 'yellow',
                     options: 'bold'
                 );
             }
-        } else if($classes->has('values')) {
+        } elseif ($classes->has('values')) {
             $color = 'yellow';
         }
 
@@ -247,7 +236,7 @@ class Cli implements Renderer
             options: 'dim'
         );
 
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $line = [];
 
             foreach ($row as $chunk) {

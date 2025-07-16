@@ -27,7 +27,7 @@ class SplObjectStorage extends NativeObject
         $this->length = $storage->count();
         $this->valueKeys = false;
 
-        foreach(clone $storage as $object) {
+        foreach (clone $storage as $object) {
             $this->values[] = [
                 'object' => $object,
                 'info' => $storage->getInfo()

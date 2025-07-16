@@ -11,9 +11,8 @@ namespace DecodeLabs\Nuance\Entity\NativeObject;
 
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Reflection;
-use ReflectionType as ReflectionTypeObject;
 use ReflectionNamedType;
-use ReflectionUnionType;
+use ReflectionType as ReflectionTypeObject;
 
 class ReflectionType extends NativeObject
 {

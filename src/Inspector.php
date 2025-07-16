@@ -20,7 +20,6 @@ use DecodeLabs\Nuance\Entity\NativeNull;
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Entity\NativeResource;
 use DecodeLabs\Nuance\Entity\NativeString;
-use DecodeLabs\Nuance\SensitiveProperty;
 use DecodeLabs\Nuance\Structure\PropertyVisibility;
 use ReflectionClass;
 use SensitiveParameterValue;
@@ -57,39 +56,38 @@ class Inspector
         mixed $value
     ): Entity {
         // Entity
-        if($value instanceof Entity) {
+        if ($value instanceof Entity) {
             return $value;
         }
 
         // Null
-        if($value === null) {
+        if ($value === null) {
             return new NativeNull();
         }
 
         // Bool
-        if(is_bool($value)) {
+        if (is_bool($value)) {
             return new NativeBoolean($value);
         }
 
         // Int
-        if(is_int($value)) {
+        if (is_int($value)) {
             return new NativeInteger($value);
         }
 
         // Float
-        if(is_float($value)) {
+        if (is_float($value)) {
             return new NativeFloat($value);
         }
 
         // String
-        if(is_string($value)) {
+        if (is_string($value)) {
             // Binary string
             if (
                 $value !== '' &&
                 !preg_match('//u', $value)
             ) {
                 return new Binary($value);
-
             }
 
             $isPossibleClass = preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $value);
@@ -121,7 +119,7 @@ class Inspector
         if (is_array($value)) {
             $entity = new NativeArray($value);
 
-            if(!isset($this->arrayIds[$entity->hash])) {
+            if (!isset($this->arrayIds[$entity->hash])) {
                 $this->arrayIds[$entity->hash] = count($this->arrayIds);
             }
 
@@ -133,7 +131,7 @@ class Inspector
         if (is_object($value)) {
             $objectId = spl_object_id($value);
 
-            if(in_array($objectId, $this->objectStack)) {
+            if (in_array($objectId, $this->objectStack)) {
                 $entity = new NativeObject($value);
                 $entity->referenced = true;
                 return $entity;
@@ -145,7 +143,7 @@ class Inspector
 
             array_pop($this->objectStack);
 
-            if(!isset($this->objectIds[$entity->objectId])) {
+            if (!isset($this->objectIds[$entity->objectId])) {
                 $entity->referenced = false;
                 $this->objectIds[$entity->objectId] = $entity->id;
             } else {
@@ -167,14 +165,14 @@ class Inspector
         }
 
         // Extension
-        if($entity = $this->extendObject($value)) {
+        if ($entity = $this->extendObject($value)) {
             return $entity;
         }
 
         $entity = new NativeObject($value);
 
         // Debug info
-        if(method_exists($value, '__debugInfo')) {
+        if (method_exists($value, '__debugInfo')) {
             $entity->values = Coercion::asArray($value->__debugInfo());
             return $entity;
         }
@@ -191,10 +189,10 @@ class Inspector
     ): ?NativeObject {
         $class = get_class($value);
 
-        if(array_key_exists($class, $this->extensions)) {
+        if (array_key_exists($class, $this->extensions)) {
             $extensionClass = $this->extensions[$class];
 
-            if($extensionClass === null) {
+            if ($extensionClass === null) {
                 return null;
             }
         } else {
@@ -210,7 +208,7 @@ class Inspector
 
                 $parentName = $parent->getName();
 
-                if(
+                if (
                     !str_contains($parentName, '@anonymous') &&
                     !in_array($parentName, $extensions)
                 ) {
@@ -222,7 +220,7 @@ class Inspector
 
             $root = [];
 
-            if(!str_contains($class, '@anonymous')) {
+            if (!str_contains($class, '@anonymous')) {
                 $root[] = $class;
             }
 
@@ -231,25 +229,24 @@ class Inspector
             );
             $extensionClass = null;
 
-            usort($extensions, function($a, $b) {
+            usort($extensions, function ($a, $b) {
                 return count(explode('\\', $b)) <=> count(explode('\\', $a));
             });
 
-            foreach($extensions as $subClass) {
+            foreach ($extensions as $subClass) {
                 $subClass = NativeObject::class . '\\' . $subClass;
 
-                if(
+                if (
                     class_exists($subClass) &&
                     ($ref = new ReflectionClass($subClass))->isInstantiable() &&
                     $ref->isSubclassOf(NativeObject::class)
                 ) {
-
                     $extensionClass = $subClass;
                     break;
                 }
             }
 
-            if($extensionClass === null) {
+            if ($extensionClass === null) {
                 return $this->extensions[$class] = null;
             }
         }
@@ -291,7 +288,7 @@ class Inspector
                     continue;
                 } elseif ($entity->hasProperty($name)) {
                     continue;
-                } elseif(
+                } elseif (
                     $property->isVirtual() &&
                     empty($property->getAttributes(DumpableVirtualProperty::class))
                 ) {
@@ -319,14 +316,13 @@ class Inspector
                 $entity->setProperty(
                     name: $name,
                     value: $value,
-                    visibility: match(true) {
+                    visibility: match (true) {
                         $property->isProtected() => PropertyVisibility::Protected,
                         $property->isPrivate() => PropertyVisibility::Private,
                         default => PropertyVisibility::Public
                     },
                     virtual: $property->isVirtual(),
-                    readOnly:
-                        $property->isPrivateSet() ||
+                    readOnly: $property->isPrivateSet() ||
                         $property->isProtectedSet() ||
                         $property->isReadOnly(),
                 );

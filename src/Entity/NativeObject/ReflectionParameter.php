@@ -20,7 +20,7 @@ class ReflectionParameter extends NativeObject
     ) {
         parent::__construct($reflection);
 
-        $this->itemName = '$'.$reflection->getName();
+        $this->itemName = '$' . $reflection->getName();
         $this->definition = Reflection::getParameterDefinition($reflection);
         $this->open = false;
     }

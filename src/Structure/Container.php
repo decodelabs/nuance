@@ -11,8 +11,8 @@ namespace DecodeLabs\Nuance\Structure;
 
 class Container
 {
-    protected(set) string $type;
-    protected(set) string $id;
+    public protected(set) string $type;
+    public protected(set) string $id;
     public string $renderedName = '';
     public ?int $objectId = null;
     public bool $open = true;
@@ -21,7 +21,7 @@ class Container
     /**
      * @var array<string,Section>
      */
-    protected(set) array $sections = [];
+    public protected(set) array $sections = [];
 
     public function __construct(
         string $type,
@@ -62,7 +62,7 @@ class Container
     {
         return array_filter(
             $this->sections,
-            static fn(Section $section) => $section->open
+            static fn (Section $section) => $section->open
         );
     }
 
@@ -70,20 +70,21 @@ class Container
     {
         uasort(
             $this->sections,
-            static fn(Section $a, Section $b) => $a->priority <=> $b->priority
+            static fn (Section $a, Section $b) => $a->priority <=> $b->priority
         );
     }
 
-    public function getOpenId(): ?string {
+    public function getOpenId(): ?string
+    {
         $openId = null;
         $firstId = null;
 
-        foreach($this->sections as $section) {
-            if($firstId === null) {
+        foreach ($this->sections as $section) {
+            if ($firstId === null) {
                 $firstId = $section->id;
             }
 
-            if(
+            if (
                 $openId === null &&
                 $section->open
             ) {

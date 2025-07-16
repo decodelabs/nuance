@@ -23,7 +23,7 @@ class Redis extends NativeObject
         $isConnected = $redis->isConnected();
         $this->meta['connected'] = $isConnected;
 
-        if($isConnected) {
+        if ($isConnected) {
             $this->meta['host'] = $redis->getHost();
             $this->meta['port'] = $redis->getPort();
             $this->meta['auth'] = $redis->getAuth();

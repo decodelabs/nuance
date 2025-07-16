@@ -27,7 +27,7 @@ class ReflectionClass extends NativeObject
         $this->definition = Reflection::getClassDefinition($reflection);
         $this->itemName = $reflection->getShortName();
 
-        if(!$reflection->isInternal()) {
+        if (!$reflection->isInternal()) {
             $this->file = $reflection->getFileName() ?: null;
             $this->startLine = $reflection->getStartLine() ?: null;
             $this->endLine = $reflection->getEndLine() ?: null;

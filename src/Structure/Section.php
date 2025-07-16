@@ -11,15 +11,15 @@ namespace DecodeLabs\Nuance\Structure;
 
 class Section
 {
-    protected(set) string $key;
+    public protected(set) string $key;
 
     public string $id {
-        get => $this->id ??= uniqid('section-'.$this->key.'-');
+        get => $this->id ??= uniqid('section-' . $this->key . '-');
     }
 
     public string $keyChar {
         get {
-            if(!isset($this->keyChar)) {
+            if (!isset($this->keyChar)) {
                 $this->keyChar = substr($this->key, 0, 1);
             }
 

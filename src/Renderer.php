@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance;
 
-use DecodeLabs\Remnant\Frame;
-use DecodeLabs\Nuance\Entity;
 use DecodeLabs\Nuance\Entity\Binary;
 use DecodeLabs\Nuance\Entity\ClassString;
 use DecodeLabs\Nuance\Entity\ConstOption;
@@ -19,15 +17,13 @@ use DecodeLabs\Nuance\Entity\NativeArray;
 use DecodeLabs\Nuance\Entity\NativeBoolean;
 use DecodeLabs\Nuance\Entity\NativeFloat;
 use DecodeLabs\Nuance\Entity\NativeInteger;
-use DecodeLabs\Nuance\Entity\NativeNull;
-use DecodeLabs\Nuance\Entity\NativeResource;
 use DecodeLabs\Nuance\Entity\NativeObject;
-use DecodeLabs\Nuance\Entity\NativeObject\DecodeLabs\Remnant\Trace as TraceEntity;
+use DecodeLabs\Nuance\Entity\NativeResource;
 use DecodeLabs\Nuance\Entity\NativeString;
-use DecodeLabs\Nuance\Entity\Traceable;
 use DecodeLabs\Nuance\Structure\ClassList;
 use DecodeLabs\Nuance\Structure\Container;
 use DecodeLabs\Nuance\Structure\ListStyle;
+use DecodeLabs\Remnant\Frame;
 use DecodeLabs\Remnant\Trace;
 
 interface Renderer

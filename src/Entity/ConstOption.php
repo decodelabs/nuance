@@ -21,7 +21,7 @@ class ConstOption implements Value, Structured
     /**
      * @var array<string,string|bool|int|float|array<mixed>|null>
      */
-    protected(set) array $options = [];
+    public protected(set) array $options = [];
 
     /**
      * @param string|bool|int|float|array<mixed>|null $value
@@ -34,7 +34,7 @@ class ConstOption implements Value, Structured
         $this->value = $value;
         $this->options = [];
 
-        foreach($constNames as $name) {
+        foreach ($constNames as $name) {
             $name = ltrim($name, '\\');
 
             // @phpstan-ignore-next-line

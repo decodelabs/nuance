@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
-use DecodeLabs\Nuance\Entity\NativeObject;
-use DecodeLabs\Nuance\Reflection;
 use DateTime;
 use DateTimeInterface as DateTimeInterfaceObject;
+use DecodeLabs\Nuance\Entity\NativeObject;
+use DecodeLabs\Nuance\Reflection;
 
 class DateTimeInterface extends NativeObject
 {

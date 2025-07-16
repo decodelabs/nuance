@@ -10,9 +10,6 @@ declare(strict_types=1);
 namespace DecodeLabs\Nuance\Renderer\Cli;
 
 use BackedEnum;
-use DecodeLabs\Nuance\Renderer\Cli\Background;
-use DecodeLabs\Nuance\Renderer\Cli\Foreground;
-use DecodeLabs\Nuance\Renderer\Cli\Option;
 
 trait FormatterTrait
 {
@@ -150,8 +147,8 @@ trait FormatterTrait
     ): array {
         $output = [];
 
-        foreach($options as $option) {
-            if(is_array($option)) {
+        foreach ($options as $option) {
+            if (is_array($option)) {
                 $output = array_merge($output, $this->flattenOptions($option));
             } elseif ($option instanceof Option) {
                 $output[] = $option;

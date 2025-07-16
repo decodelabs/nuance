@@ -23,7 +23,7 @@ class ReflectionFunctionAbstract extends NativeObject
         $this->definition = Reflection::getFunctionDefinition($reflection);
         $this->itemName = $reflection->getShortName();
 
-        if(str_starts_with($this->itemName, '{closure')) {
+        if (str_starts_with($this->itemName, '{closure')) {
             $this->itemName = 'closure';
         } else {
             $this->itemName .= '()';

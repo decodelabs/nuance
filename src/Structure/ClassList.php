@@ -16,12 +16,12 @@ class ClassList implements Stringable
     /**
      * @var list<string>
      */
-    protected(set) array $classes = [];
+    public protected(set) array $classes = [];
 
     public static function fromString(
         ?string $classes
     ): ?self {
-        if(
+        if (
             $classes === null ||
             $classes === ''
         ) {
@@ -36,8 +36,8 @@ class ClassList implements Stringable
     ): self {
         $output = new self();
 
-        foreach($classes as $class) {
-            if($class === null) {
+        foreach ($classes as $class) {
+            if ($class === null) {
                 continue;
             }
 

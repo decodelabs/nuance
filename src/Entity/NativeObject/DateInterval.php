@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
+use DateInterval as DateIntervalObject;
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Inspector;
 use DecodeLabs\Nuance\Reflection;
-use DateInterval as DateIntervalObject;
 
 class DateInterval extends NativeObject
 {

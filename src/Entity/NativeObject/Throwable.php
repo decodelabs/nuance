@@ -18,7 +18,7 @@ use Throwable as ThrowableObject;
 
 class Throwable extends NativeObject implements Traceable
 {
-    protected(set) Trace $stackTrace;
+    public protected(set) Trace $stackTrace;
 
     public function __construct(
         ThrowableObject $exception,
@@ -58,7 +58,7 @@ class Throwable extends NativeObject implements Traceable
             ]
         );
 
-        if(class_exists(Monarch::class)) {
+        if (class_exists(Monarch::class)) {
             $file = Monarch::$paths->prettify($file);
         }
 

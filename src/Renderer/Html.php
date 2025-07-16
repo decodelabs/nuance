@@ -154,7 +154,7 @@ class Html implements Renderer
         $large = $count > 10;
         $el = 'div';
 
-        if($large) {
+        if ($large) {
             $el = 'label';
             $content[] = $this->el(
                 tag: 'input',
@@ -172,7 +172,7 @@ class Html implements Renderer
 
         $lines = [];
 
-        foreach($parts as $part) {
+        foreach ($parts as $part) {
             $lines[] = $this->el(
                 tag: 'div',
                 content: $this->renderStringLine($part),
@@ -212,7 +212,7 @@ class Html implements Renderer
         $count = count($rows);
         $large = $count > 4;
 
-        if($large) {
+        if ($large) {
             $el = 'label';
             $output[] = $this->el(
                 tag: 'input',
@@ -224,7 +224,7 @@ class Html implements Renderer
 
         $lines = [];
 
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $line = [];
 
             foreach ($row as $chunk) {
@@ -308,7 +308,7 @@ class Html implements Renderer
     ): string {
         $classes = ClassList::of('control');
 
-        if($control === '\\t') {
+        if ($control === '\\t') {
             $classes->add('tab');
         }
 
@@ -329,11 +329,11 @@ class Html implements Renderer
 
         $name = $entity->getSelectedConstName();
 
-        if($name !== null) {
+        if ($name !== null) {
             $output[] = $this->renderConstName($name);
         }
 
-        if(is_array($entity->value)) {
+        if (is_array($entity->value)) {
             $output[] = $this->renderIdentifier(
                 'array',
                 ClassList::of('keyword')
@@ -343,7 +343,7 @@ class Html implements Renderer
 
             $classes = ClassList::of('value');
 
-            if(is_string($entity->value)) {
+            if (is_string($entity->value)) {
                 $output[] = $this->renderString(
                     new NativeString($entity->value),
                     classes: $classes,
@@ -382,7 +382,7 @@ class Html implements Renderer
             content: implode(' ', $output),
             classes: ClassList::of('object-reference', $classes),
             attributes: [
-                'href' => '#'.$entity->id,
+                'href' => '#' . $entity->id,
             ]
         );
     }
@@ -402,7 +402,7 @@ class Html implements Renderer
             content: $container->renderedName,
             classes: ClassList::of('name'),
             attributes: [
-                'for' => $container->id.'-toggle',
+                'for' => $container->id . '-toggle',
             ]
         );
 
@@ -410,25 +410,25 @@ class Html implements Renderer
         $hasOpenSection = false;
         $hasBrackets = !$container->sensitive && !empty($container->sections);
 
-        foreach($container->sections as $section) {
-            if($section->open) {
+        foreach ($container->sections as $section) {
+            if ($section->open) {
                 $hasOpenSection = true;
             }
 
-            if(!$container->sensitive) {
+            if (!$container->sensitive) {
                 $isOpen = $section->id === $openId;
                 $button = [];
                 $button[] = $this->el(
                     tag: 'input',
                     attributes: [
                         'type' => 'radio',
-                        'name' => $container->id.'-toggle',
+                        'name' => $container->id . '-toggle',
                         'value' => $section->id,
                         'checked' => $isOpen,
                         'class' => 'section-toggle',
                     ]
                 );
-                $button[] = '<i>'.$section->keyChar.'</i>';
+                $button[] = '<i>' . $section->keyChar . '</i>';
 
                 $buttons[] = $this->el(
                     tag: 'label',
@@ -438,7 +438,7 @@ class Html implements Renderer
             }
         }
 
-        if(count($buttons) > 1) {
+        if (count($buttons) > 1) {
             $header[] = $this->el(
                 tag: 'div',
                 content: implode('', $buttons),
@@ -446,19 +446,19 @@ class Html implements Renderer
             );
         }
 
-        if($hasBrackets) {
+        if ($hasBrackets) {
             $header[] = $this->renderGrammar('{');
         }
 
-        if($container->objectId !== null) {
+        if ($container->objectId !== null) {
             $header[] = $this->renderIdentifier(
                 (string)$container->objectId,
                 ClassList::of('object-id')
             );
         }
 
-        if($container->sensitive) {
-            if($hasBrackets) {
+        if ($container->sensitive) {
+            if ($hasBrackets) {
                 $header[] = $this->renderGrammar('}');
             }
         } else {
@@ -466,7 +466,7 @@ class Html implements Renderer
                 tag: 'input',
                 attributes: [
                     'type' => 'checkbox',
-                    'id' => $container->id.'-toggle',
+                    'id' => $container->id . '-toggle',
                     'checked' => $container->open && $openId && $hasOpenSection,
                     'class' => 'container-toggle',
                 ]
@@ -479,7 +479,7 @@ class Html implements Renderer
         );
 
 
-        if(
+        if (
             !empty($container->sections) &&
             !$container->sensitive
         ) {
@@ -493,7 +493,7 @@ class Html implements Renderer
                     tag: 'input',
                     attributes: [
                         'type' => 'radio',
-                        'name' => $container->id.'-section',
+                        'name' => $container->id . '-section',
                         'value' => $section->id,
                         'id' => $section->id,
                         'checked' => $isOpen,
@@ -752,11 +752,11 @@ class Html implements Renderer
         array $lines,
         ?ClassList $classes = null,
     ): string {
-        return "\n".
+        return "\n" .
             $this->el(
                 tag: 'ul',
                 content: implode("\n", array_map(
-                    fn($line) => $this->el('li', $line),
+                    fn ($line) => $this->el('li', $line),
                     $lines
                 )),
                 classes: $classes
@@ -789,13 +789,13 @@ class Html implements Renderer
         ?ClassList $classes = null,
         array $attributes = []
     ): string {
-        if($classes) {
+        if ($classes) {
             $classes = clone $classes;
         } else {
             $classes = new ClassList();
         }
 
-        if(isset($attributes['class'])) {
+        if (isset($attributes['class'])) {
             $classes->add(...explode(' ', Coercion::toString($attributes['class'])));
         }
 
@@ -821,7 +821,7 @@ class Html implements Renderer
             . (!empty($attrStrings) ? ' ' . implode(' ', $attrStrings) : '')
             . '>';
 
-        if($tag === 'input') {
+        if ($tag === 'input') {
             return $output;
         }
 

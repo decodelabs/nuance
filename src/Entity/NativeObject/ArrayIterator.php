@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
+use ArrayIterator as ArrayIteratorObject;
 use DecodeLabs\Nuance\Entity\FlagSet;
 use DecodeLabs\Nuance\Entity\NativeObject;
-use ArrayIterator as ArrayIteratorObject;
 
 class ArrayIterator extends NativeObject
 {

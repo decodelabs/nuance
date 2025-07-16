@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
-use DecodeLabs\Nuance\Entity\NativeObject;
 use CurlHandle as CurlHandleObject;
+use DecodeLabs\Nuance\Entity\NativeObject;
 
 class CurlHandle extends NativeObject
 {

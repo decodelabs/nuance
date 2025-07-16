@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
-use DecodeLabs\Nuance\Entity\NativeObject;
 use __PHP_Incomplete_Class as __PHP_Incomplete_ClassObject;
 use DecodeLabs\Coercion;
+use DecodeLabs\Nuance\Entity\NativeObject;
 
 class __PHP_Incomplete_Class extends NativeObject
 {

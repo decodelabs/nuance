@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
-use DecodeLabs\Nuance\Entity\NativeObject;
 use Closure as ClosureObject;
+use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Reflection;
 use ReflectionFunction;
 

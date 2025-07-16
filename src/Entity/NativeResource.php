@@ -46,7 +46,7 @@ class NativeResource implements Value
      */
     public function getMetaValues(): ?array
     {
-        return match($this->type) {
+        return match ($this->type) {
             // Bzip
             'bzip2' => null,
 

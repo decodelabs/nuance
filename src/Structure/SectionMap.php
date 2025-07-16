@@ -20,7 +20,7 @@ class SectionMap
         bool ...$sections
     ) {
         foreach ($sections as $key => $open) {
-            if(!is_string($key)) {
+            if (!is_string($key)) {
                 continue;
             }
 

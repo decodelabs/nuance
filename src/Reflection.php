@@ -159,7 +159,7 @@ class Reflection
         }
 
         if ($type = $parameter->getType()) {
-            $output .= static::getTypeName($type). ' ';
+            $output .= static::getTypeName($type) . ' ';
         }
 
         if ($parameter->isPassedByReference()) {
@@ -189,10 +189,10 @@ class Reflection
         }
 
         if ($value instanceof UnitEnum) {
-            return get_class($value).'::'.$value->name;
+            return get_class($value) . '::' . $value->name;
         }
 
-        if(!is_scalar($value)) {
+        if (!is_scalar($value)) {
             $value = gettype($value);
         }
 
@@ -206,7 +206,7 @@ class Reflection
         if ($type instanceof ReflectionNamedType) {
             $output = $type->getName();
 
-            if($short) {
+            if ($short) {
                 $output = explode('\\', $output);
                 $output = array_pop($output);
             }
@@ -224,14 +224,14 @@ class Reflection
             return implode('|', $parts);
         }
 
-        if($type instanceof ReflectionIntersectionType) {
+        if ($type instanceof ReflectionIntersectionType) {
             $parts = [];
 
             foreach ($type->getTypes() as $innerType) {
                 $parts[] = static::getTypeName($innerType);
             }
 
-            return '('.implode('&', $parts).')';
+            return '(' . implode('&', $parts) . ')';
         }
 
         return '';

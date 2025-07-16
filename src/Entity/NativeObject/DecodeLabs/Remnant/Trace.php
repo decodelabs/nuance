@@ -15,7 +15,7 @@ use DecodeLabs\Remnant\Trace as TraceObject;
 
 class Trace extends NativeObject implements Traceable
 {
-    protected(set) TraceObject $stackTrace;
+    public protected(set) TraceObject $stackTrace;
 
     public function __construct(
         TraceObject $trace,

@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity;
 
+use DecodeLabs\Monarch;
 use DecodeLabs\Nuance\Structure\LazyType;
 use DecodeLabs\Nuance\Structure\Property;
 use DecodeLabs\Nuance\Structure\PropertyVisibility;
-use DecodeLabs\Monarch;
 use DecodeLabs\Nuance\Structure\SectionMap;
 use ReflectionClass;
 use ReflectionObject;
@@ -28,16 +28,16 @@ class NativeObject implements Structured
 
     public string $displayName {
         get {
-            if(isset($this->displayName)) {
+            if (isset($this->displayName)) {
                 return $this->displayName;
             }
 
             $name = $this->className;
 
-            if(str_contains($name, "class@anonymous\x00")) {
+            if (str_contains($name, "class@anonymous\x00")) {
                 $ref = new ReflectionClass($this->class);
 
-                if($parent = $ref->getParentClass()) {
+                if ($parent = $ref->getParentClass()) {
                     $name = $parent->getName() . '@anonymous';
                 } else {
                     $name = '@anonymous';
@@ -47,9 +47,9 @@ class NativeObject implements Structured
                 array_pop($parts);
                 $parentNs = array_pop($parts);
 
-                if(!empty($parentNs)) {
-                    foreach($this->interfaces as $interface) {
-                        if(str_ends_with($interface, '\\' . $parentNs)) {
+                if (!empty($parentNs)) {
+                    foreach ($this->interfaces as $interface) {
+                        if (str_ends_with($interface, '\\' . $parentNs)) {
                             $name = $parentNs . '\\' . $name;
                             break;
                         }
@@ -61,37 +61,37 @@ class NativeObject implements Structured
         }
     }
 
-    protected(set) int $objectId;
-    protected(set) string $hash;
+    public protected(set) int $objectId;
+    public protected(set) string $hash;
 
     /**
      * @var class-string
      */
-    protected(set) string $class;
-    protected(set) string $className;
-    protected(set) ?string $namespace = null;
-    protected(set) bool $internal;
+    public protected(set) string $class;
+    public protected(set) string $className;
+    public protected(set) ?string $namespace = null;
+    public protected(set) bool $internal;
 
     /**
      * @var list<class-string>
      */
-    protected(set) array $parents;
+    public protected(set) array $parents;
 
     /**
      * @var list<class-string>
      */
-    protected(set) array $interfaces;
+    public protected(set) array $interfaces;
 
     /**
      * @var list<class-string>
      */
-    protected(set) array $traits;
+    public protected(set) array $traits;
 
-    protected(set) ?string $file = null;
-    protected(set) ?int $startLine = null;
-    protected(set) ?int $endLine = null;
+    public protected(set) ?string $file = null;
+    public protected(set) ?int $startLine = null;
+    public protected(set) ?int $endLine = null;
 
-    protected(set) ?LazyType $lazy = null;
+    public protected(set) ?LazyType $lazy = null;
     public ?string $itemName = null;
     public ?string $text = null;
     public ?string $definition = null;
@@ -106,7 +106,7 @@ class NativeObject implements Structured
     /**
      * @var array<string,Property>
      */
-    protected(set) array $properties = [];
+    public protected(set) array $properties = [];
 
     /**
      * @var array<mixed>
@@ -138,7 +138,7 @@ class NativeObject implements Structured
         $this->className = $ref->getShortName();
         $namespace = $ref->getNamespaceName();
 
-        if($namespace === '') {
+        if ($namespace === '') {
             $this->namespace = null;
         } else {
             $this->namespace = $namespace;
@@ -171,7 +171,7 @@ class NativeObject implements Structured
         sort($this->interfaces);
         sort($this->traits);
 
-        if(!$this->internal) {
+        if (!$this->internal) {
             $file = $ref->getFileName();
             $startLine = $ref->getStartLine();
             $endLine = $ref->getEndLine();
@@ -186,9 +186,9 @@ class NativeObject implements Structured
                 var_dump($object);
                 $export = (string)ob_get_clean();
 
-                if(str_starts_with($export, 'lazy ghost')) {
+                if (str_starts_with($export, 'lazy ghost')) {
                     $this->lazy = LazyType::Ghost;
-                } else if(str_starts_with($export, 'lazy proxy')) {
+                } elseif (str_starts_with($export, 'lazy proxy')) {
                     $this->lazy = LazyType::Proxy;
                 } else {
                     $this->lazy = LazyType::Unknown;
@@ -207,7 +207,7 @@ class NativeObject implements Structured
         bool $virtual = false,
         bool $readOnly = false
     ): void {
-        if(is_string($visibility)) {
+        if (is_string($visibility)) {
             $visibility = PropertyVisibility::from($visibility);
         }
 
@@ -273,23 +273,23 @@ class NativeObject implements Structured
     {
         $info['class'] = $this->class;
 
-        if($file = $this->file) {
-            if(class_exists(Monarch::class)) {
+        if ($file = $this->file) {
+            if (class_exists(Monarch::class)) {
                 $file = Monarch::$paths->prettify($file);
             }
 
             $info['location'] = $file . ' : ' . $this->startLine;
         }
 
-        if(!empty($this->parents)) {
+        if (!empty($this->parents)) {
             $info['parents'] = $this->parents;
         }
 
-        if(!empty($this->interfaces)) {
+        if (!empty($this->interfaces)) {
             $info['interfaces'] = $this->interfaces;
         }
 
-        if(!empty($this->traits)) {
+        if (!empty($this->traits)) {
             $info['traits'] = $this->traits;
         }
 

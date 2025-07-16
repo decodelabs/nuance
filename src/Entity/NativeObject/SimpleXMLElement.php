@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
 use DecodeLabs\Nuance\Entity\NativeObject;
-use SimpleXMLElement as SimpleXMLElementObject;
 use ReflectionObject;
+use SimpleXMLElement as SimpleXMLElementObject;
 
 class SimpleXMLElement extends NativeObject
 {
@@ -22,7 +22,7 @@ class SimpleXMLElement extends NativeObject
 
         $ref = new ReflectionObject($element);
 
-        foreach($ref->getProperties() as $property) {
+        foreach ($ref->getProperties() as $property) {
             $name = $property->getName();
             $this->values[$name] = $property->getValue($element);
         }

@@ -12,7 +12,7 @@ namespace DecodeLabs\Nuance\Structure;
 use DecodeLabs\Enumerable\Backed\NamedString;
 use DecodeLabs\Enumerable\Backed\NamedStringTrait;
 
-enum ListStyle : string implements NamedString
+enum ListStyle: string implements NamedString
 {
     use NamedStringTrait;
 

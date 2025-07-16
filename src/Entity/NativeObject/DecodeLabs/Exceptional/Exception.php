@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject\DecodeLabs\Exceptional;
 
-use DecodeLabs\Nuance\Entity\NativeObject\Throwable as ThrowableEntity;
 use DecodeLabs\Exceptional\Exception as ExceptionObject;
+use DecodeLabs\Nuance\Entity\NativeObject\Throwable as ThrowableEntity;
 
 class Exception extends ThrowableEntity
 {

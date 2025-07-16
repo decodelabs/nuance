@@ -18,7 +18,7 @@ class FlagSet implements Value
     /**
      * @var array<string,int>
      */
-    protected(set) array $options = [];
+    public protected(set) array $options = [];
 
     /**
      * @param list<string> $constNames
@@ -30,11 +30,11 @@ class FlagSet implements Value
         $this->value = $value;
         $this->options = [];
 
-        foreach($constNames as $name) {
+        foreach ($constNames as $name) {
             $name = ltrim($name, '\\');
             $option = Coercion::tryInt(constant($name));
 
-            if($option === null) {
+            if ($option === null) {
                 continue;
             }
 

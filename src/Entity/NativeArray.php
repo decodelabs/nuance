@@ -30,7 +30,7 @@ class NativeArray implements Value, Structured
                 return $this->hash;
             }
 
-            if(!$this->length) {
+            if (!$this->length) {
                 return null;
             }
 
@@ -42,7 +42,7 @@ class NativeArray implements Value, Structured
         }
     }
 
-    protected(set) bool $referenced = false;
+    public protected(set) bool $referenced = false;
     public int $referenceId = 0;
 
     /**
@@ -63,7 +63,7 @@ class NativeArray implements Value, Structured
 
     public static function getCookieKey(): string
     {
-        if(self::$cookieKey === null) {
+        if (self::$cookieKey === null) {
             self::$cookieKey = uniqid('__nuance_array_');
         }
 

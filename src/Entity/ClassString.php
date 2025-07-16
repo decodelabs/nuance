@@ -15,11 +15,11 @@ class ClassString implements Value
 
     public string $type {
         get {
-            if(trait_exists($this->value)) {
+            if (trait_exists($this->value)) {
                 return 'trait';
             }
 
-            if(interface_exists($this->value)) {
+            if (interface_exists($this->value)) {
                 return 'interface';
             }
 

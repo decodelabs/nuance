@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Nuance\Entity\NativeObject;
 
-use DecodeLabs\Nuance\Entity\NativeObject;
 use ReflectionMethod as ReflectionMethodObject;
 
 class ReflectionMethod extends ReflectionFunctionAbstract

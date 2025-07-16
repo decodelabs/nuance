@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace DecodeLabs\Nuance;
 
 use DecodeLabs\Monarch;
-use DecodeLabs\Nuance\Entity;
 use DecodeLabs\Nuance\Entity\Binary;
 use DecodeLabs\Nuance\Entity\ClassString;
 use DecodeLabs\Nuance\Entity\ConstOption;
@@ -20,10 +19,10 @@ use DecodeLabs\Nuance\Entity\NativeBoolean;
 use DecodeLabs\Nuance\Entity\NativeFloat;
 use DecodeLabs\Nuance\Entity\NativeInteger;
 use DecodeLabs\Nuance\Entity\NativeNull;
-use DecodeLabs\Nuance\Entity\NativeResource;
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DecodeLabs\Nuance\Entity\NativeObject\DecodeLabs\Remnant\Trace as TraceEntity;
 use DecodeLabs\Nuance\Entity\NativeObject\Throwable as ThrowableEntity;
+use DecodeLabs\Nuance\Entity\NativeResource;
 use DecodeLabs\Nuance\Entity\NativeString;
 use DecodeLabs\Nuance\Entity\Traceable;
 use DecodeLabs\Nuance\Structure\ClassList;
@@ -75,69 +74,69 @@ trait RendererTrait
         int $level = 0,
         ?ClassList $classes = null
     ): string {
-        if(!$value instanceof Entity) {
+        if (!$value instanceof Entity) {
             $value = $this->inspector->inspect($value);
         }
 
 
 
         // Null
-        if($value instanceof NativeNull) {
+        if ($value instanceof NativeNull) {
             return $this->renderNull($classes);
         }
 
         // Bool
-        if($value instanceof NativeBoolean) {
+        if ($value instanceof NativeBoolean) {
             return $this->renderBoolean($value, $classes);
         }
 
         // Integer
-        if($value instanceof NativeInteger) {
+        if ($value instanceof NativeInteger) {
             return $this->renderInteger($value, $classes);
         }
 
         // Float
-        if($value instanceof NativeFloat) {
+        if ($value instanceof NativeFloat) {
             return $this->renderFloat($value, $classes);
         }
 
         // Binary
-        if($value instanceof Binary) {
+        if ($value instanceof Binary) {
             return $this->renderBinary($value, $classes);
         }
 
         // Class string
-        if($value instanceof ClassString) {
+        if ($value instanceof ClassString) {
             return $this->renderClassString($value, $classes);
         }
 
         // String
-        if($value instanceof NativeString) {
+        if ($value instanceof NativeString) {
             return $this->renderString($value, $classes);
         }
 
         // Resource
-        if($value instanceof NativeResource) {
+        if ($value instanceof NativeResource) {
             return $this->renderResource($value, $classes);
         }
 
         // Const option
-        if($value instanceof ConstOption) {
+        if ($value instanceof ConstOption) {
             return $this->renderConstOption($value, $classes);
         }
 
         // Flag set
-        if($value instanceof FlagSet) {
+        if ($value instanceof FlagSet) {
             return $this->renderFlagSet($value, $classes);
         }
 
         // Array
-        if($value instanceof NativeArray) {
+        if ($value instanceof NativeArray) {
             return $this->renderArray($value, $level, $classes);
         }
 
         // Object
-        if($value instanceof NativeObject) {
+        if ($value instanceof NativeObject) {
             return $this->renderObject($value, $level, $classes);
         }
 
@@ -261,7 +260,7 @@ trait RendererTrait
     protected function normalizeHexString(
         string $hex
     ): string {
-        return match($hex) {
+        return match ($hex) {
             '07' => '\\a',
             '1b' => '\\e',
             '0c' => '\\f',
@@ -279,7 +278,7 @@ trait RendererTrait
         $output = [];
         $rows = $entity->splitChunkRows();
 
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $line = [];
 
             foreach ($row as $chunk) {
@@ -324,7 +323,7 @@ trait RendererTrait
     ): string {
         $container = new Container(
             type: 'resource',
-            id: 'resource-'.$entity->id,
+            id: 'resource-' . $entity->id,
             objectId: $entity->id
         );
 
@@ -336,7 +335,7 @@ trait RendererTrait
 
         $values = $entity->getMetaValues() ?? [];
 
-        if(!empty($values)) {
+        if (!empty($values)) {
             $meta = new Section(
                 key: 'meta',
                 open: false
@@ -366,7 +365,7 @@ trait RendererTrait
 
         $name = $entity->getSelectedConstName();
 
-        if($name !== null) {
+        if ($name !== null) {
             $output[] = $this->renderConstName(
                 $name,
                 ClassList::of('const-option')
@@ -405,7 +404,7 @@ trait RendererTrait
         $values = new Section('values', open: true);
         $items = [];
 
-        foreach($entity->getSelectedConstValues() as $name => $value) {
+        foreach ($entity->getSelectedConstValues() as $name => $value) {
             $items[] = new ConstOption(
                 value: $value,
                 constNames: [$name]
@@ -448,7 +447,7 @@ trait RendererTrait
         );
         $container->renderedName = implode(' ', $name);
 
-        if($entity->length) {
+        if ($entity->length) {
             $valueSection = new Section(
                 key: 'values',
                 open: true
@@ -472,7 +471,7 @@ trait RendererTrait
         int $level = 0,
         ?ClassList $classes = null,
     ): string {
-        if($entity->referenced) {
+        if ($entity->referenced) {
             return $this->renderObjectReference($entity, $classes);
         }
 
@@ -487,7 +486,7 @@ trait RendererTrait
 
         $name = [];
 
-        if($entity->lazy) {
+        if ($entity->lazy) {
             $name[] = $this->renderPointer(
                 $entity->lazy->value
             );
@@ -498,7 +497,7 @@ trait RendererTrait
             ClassList::of($entity->sensitive ? 'sensitive' : null)
         );
 
-        if($entity->itemName !== null) {
+        if ($entity->itemName !== null) {
             $name[] = $this->renderGrammar('~');
             $name[] = $this->renderIdentifier(
                 identifier: $entity->itemName,
@@ -506,7 +505,7 @@ trait RendererTrait
             );
         }
 
-        if($entity->length !== null) {
+        if ($entity->length !== null) {
             $name[] = $this->renderGrammar(':');
             $name[] = $this->renderValue(
                 value: $entity->length,
@@ -539,7 +538,7 @@ trait RendererTrait
         ) {
             $textSection = new Section('text');
 
-            if($entity instanceof ThrowableEntity) {
+            if ($entity instanceof ThrowableEntity) {
                 $content = [];
 
                 $content[] = $this->renderMultiLineString(
@@ -547,7 +546,7 @@ trait RendererTrait
                     classes: ClassList::of('exception')
                 );
 
-                if($file = $entity->file) {
+                if ($file = $entity->file) {
                     $content[] = $this->renderStackFrameLocation(
                         file: $this->prettifyPath($file),
                         line: $entity->startLine,
@@ -567,7 +566,7 @@ trait RendererTrait
 
 
         // Values
-        if(
+        if (
             $entity->sections->isEnabled('values') &&
             !empty($entity->values)
         ) {
@@ -584,7 +583,7 @@ trait RendererTrait
 
 
         // Properties
-        if(
+        if (
             $entity->sections->isEnabled('properties') &&
             !empty($entity->properties)
         ) {
@@ -602,7 +601,7 @@ trait RendererTrait
 
 
         // Stack
-        if(
+        if (
             $entity instanceof Traceable &&
             $entity->sections->isEnabled('stack') &&
             $entity->stackTrace !== null
@@ -613,7 +612,7 @@ trait RendererTrait
                 classes: ClassList::of('object-stack')
             );
 
-            if($entity instanceof TraceEntity) {
+            if ($entity instanceof TraceEntity) {
                 $stackSection->priority = -5;
             }
 
@@ -623,7 +622,7 @@ trait RendererTrait
 
 
         // Meta
-        if(
+        if (
             $entity->sections->isEnabled('meta') &&
             !empty($entity->meta)
         ) {
@@ -640,7 +639,7 @@ trait RendererTrait
 
 
         // Info
-        if($entity->sections->isEnabled('info')) {
+        if ($entity->sections->isEnabled('info')) {
             $infoSection = new Section('info', open: false);
             $infoSection->renderedContent = $this->renderList(
                 items: $entity->getInfoValues(),
@@ -660,7 +659,7 @@ trait RendererTrait
     ): string {
         $output = [];
         $output[] = $this->renderClassName($entity->displayName, $classes);
-        $output[] = $this->renderGrammar('&'. $entity->objectId);
+        $output[] = $this->renderGrammar('&' . $entity->objectId);
         return implode(' ', $output);
     }
 
@@ -675,7 +674,7 @@ trait RendererTrait
         $container->sortSections();
         $sections = $container->getOpenSections();
 
-        if(
+        if (
             !empty($sections) ||
             $container->sensitive
         ) {
@@ -683,25 +682,25 @@ trait RendererTrait
             $output[] = $this->renderGrammar('{');
         }
 
-        if($container->sensitive) {
-            $output[] = ' '.$this->renderIdentifier(
+        if ($container->sensitive) {
+            $output[] = ' ' . $this->renderIdentifier(
                 identifier: 'sensitive',
                 classes: ClassList::of('sensitive')
             );
         }
 
-        if($container->objectId !== null) {
+        if ($container->objectId !== null) {
             $output[] = ' ' . $this->renderGrammar(
-                '#'.$container->objectId
+                '#' . $container->objectId
             );
         }
 
-        if(
+        if (
             empty($sections) ||
             $container->sensitive
         ) {
-            if($container->sensitive) {
-                $output[] = ' '.$this->renderGrammar('}');
+            if ($container->sensitive) {
+                $output[] = ' ' . $this->renderGrammar('}');
             }
 
             return implode('', $output);
@@ -825,12 +824,12 @@ trait RendererTrait
                 $args[] = $this->wrapSignatureArray(
                     $this->renderGrammar('[') . count($arg) . $this->renderGrammar(']')
                 );
-            } else if(is_string($arg)) {
+            } elseif (is_string($arg)) {
                 $args[] = $this->renderString(
                     new NativeString($arg),
                     singleLineMax: 16
                 );
-            } else if(is_resource($arg)) {
+            } elseif (is_resource($arg)) {
                 $args[] = $this->renderSignatureResource($arg);
             } else {
                 $args[] = $this->renderValue($arg);
@@ -1006,7 +1005,7 @@ trait RendererTrait
         $output = [];
 
         if (substr((string)$class, 0, 1) !== '~') {
-            if(empty($namespace)) {
+            if (empty($namespace)) {
                 $parts = [];
             } else {
                 $parts = explode('\\', $namespace);
@@ -1069,10 +1068,10 @@ trait RendererTrait
             if ($includeKeys) {
                 $mods = [];
 
-                if($value instanceof Property) {
+                if ($value instanceof Property) {
                     $mods[] = $value->visibility->value;
 
-                    if($value->virtual) {
+                    if ($value->virtual) {
                         $mods[] = 'virtual';
                     }
 
@@ -1109,7 +1108,7 @@ trait RendererTrait
             }
 
 
-            if($value instanceof Property) {
+            if ($value instanceof Property) {
                 $value = $value->value;
             }
 
@@ -1132,7 +1131,7 @@ trait RendererTrait
                         level: $level + 1
                     ) .
                     $this->renderGrammar('}');
-            } else if(
+            } elseif (
                 is_string($value) &&
                 $asIdentifier
             ) {
@@ -1192,11 +1191,10 @@ trait RendererTrait
     protected function prettifyPath(
         string $path
     ): string {
-        if(class_exists(Monarch::class)) {
+        if (class_exists(Monarch::class)) {
             return Monarch::$paths->prettify($path);
         }
 
         return $path;
     }
-
 }

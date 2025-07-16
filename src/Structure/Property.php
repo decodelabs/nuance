@@ -18,5 +18,6 @@ class Property
         public bool $virtual = false,
         public bool $readOnly = false,
         public bool $open = true
-    ) {}
+    ) {
+    }
 }

@@ -23,8 +23,8 @@ class UnitEnum extends NativeObject
         $this->open = false;
         $this->itemName = $enum->name;
 
-        if($enum instanceof BackedEnum) {
-            if(is_int($enum->value)) {
+        if ($enum instanceof BackedEnum) {
+            if (is_int($enum->value)) {
                 $this->length = $enum->value;
             } else {
                 $this->value = $enum->value;

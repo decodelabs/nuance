@@ -25,7 +25,7 @@ class Map extends NativeObject
         parent::__construct($map);
 
         foreach ($map as $key => $value) {
-            if(null !== ($stringKey = Coercion::tryString($key))) {
+            if (null !== ($stringKey = Coercion::tryString($key))) {
                 $this->values[$stringKey] = $value;
             } else {
                 $this->values[] = new Pair($key, $value);
