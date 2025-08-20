@@ -523,7 +523,7 @@ trait RendererTrait
         ) {
             $definitionSection = new Section('definition');
             $definitionSection->renderedContent = $this->renderValue(
-                value: trim($entity->definition),
+                value: trim((string)$entity->definition),
                 classes: ClassList::of('definition'),
             );
 
@@ -542,7 +542,7 @@ trait RendererTrait
                 $content = [];
 
                 $content[] = $this->renderMultiLineString(
-                    entity: new NativeString($entity->text),
+                    entity: new NativeString((string)$entity->text),
                     classes: ClassList::of('exception')
                 );
 
@@ -556,7 +556,7 @@ trait RendererTrait
                 $textSection->renderedContent = implode("\n", $content);
             } else {
                 $textSection->renderedContent = $this->renderValue(
-                    value: trim($entity->text),
+                    value: trim((string)$entity->text),
                     classes: ClassList::of('text'),
                 );
             }
@@ -1192,7 +1192,7 @@ trait RendererTrait
         string $path
     ): string {
         if (class_exists(Monarch::class)) {
-            return Monarch::$paths->prettify($path);
+            return Monarch::getPaths()->prettify($path);
         }
 
         return $path;

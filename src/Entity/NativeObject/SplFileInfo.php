@@ -24,7 +24,7 @@ class SplFileInfo extends NativeObject
         $path = $file->getPathname();
 
         if (class_exists(Monarch::class)) {
-            $path = Monarch::$paths->prettify($path);
+            $path = Monarch::getPaths()->prettify($path);
         }
 
         $this->text = $path;

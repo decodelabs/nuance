@@ -16,6 +16,7 @@ use DecodeLabs\Nuance\Structure\PropertyVisibility;
 use DecodeLabs\Nuance\Structure\SectionMap;
 use ReflectionClass;
 use ReflectionObject;
+use Stringable;
 use Throwable;
 
 class NativeObject implements Structured
@@ -93,8 +94,8 @@ class NativeObject implements Structured
 
     public protected(set) ?LazyType $lazy = null;
     public ?string $itemName = null;
-    public ?string $text = null;
-    public ?string $definition = null;
+    public string|Stringable|null $text = null;
+    public string|Stringable|null $definition = null;
     public bool $sensitive = false;
     public ?int $length = null;
 
@@ -275,7 +276,7 @@ class NativeObject implements Structured
 
         if ($file = $this->file) {
             if (class_exists(Monarch::class)) {
-                $file = Monarch::$paths->prettify($file);
+                $file = Monarch::getPaths()->prettify($file);
             }
 
             $info['location'] = $file . ' : ' . $this->startLine;

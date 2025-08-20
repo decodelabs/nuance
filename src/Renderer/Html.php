@@ -562,8 +562,8 @@ class Html implements Renderer
             $sig[] = "\n   ";
 
             $sig[] = $this->renderStackFrameLocation(
-                $frame->file,
-                $frame->line,
+                $frame->callingFile ?? $frame->file,
+                $frame->callingLine ?? $frame->line,
             );
 
             $line[] = implode(' ', $sig);

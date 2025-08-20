@@ -59,7 +59,7 @@ class Throwable extends NativeObject implements Traceable
         );
 
         if (class_exists(Monarch::class)) {
-            $file = Monarch::$paths->prettify($file);
+            $file = Monarch::getPaths()->prettify($file);
         }
 
         $this->setProperty('file', $file, 'private');
