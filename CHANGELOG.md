@@ -5,9 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+--
+
+---
+
+### [v0.1.9](https://github.com/decodelabs/nuance/commits/v0.1.9) - 20th August 2025
+
 - Added PrettyPath class for dumpable definition rendering
 - Fixed stack frame calling file and line
 - Removed Monarch dependency
+
+[Full list of changes](https://github.com/decodelabs/nuance/compare/v0.1.8...v0.1.9)
 
 ---
 
