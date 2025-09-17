@@ -11,17 +11,19 @@ namespace DecodeLabs\Nuance\Entity\NativeObject;
 
 use DecodeLabs\Nuance\Entity\NativeObject;
 use DOMNamedNodeMap as DOMNamedNodeMapObject;
+use DOMNode;
 
 class DOMNamedNodeMap extends NativeObject
 {
     /**
-     * @param DOMNamedNodeMapObject<mixed> $map
+     * @param DOMNamedNodeMapObject<DOMNode> $map
      */
     public function __construct(
         DOMNamedNodeMapObject $map,
     ) {
         parent::__construct($map);
 
+        /** @var string $key */
         foreach ($map as $key => $attr) {
             $this->values[$key] = $attr;
         }

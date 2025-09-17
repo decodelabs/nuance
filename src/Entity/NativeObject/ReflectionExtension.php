@@ -25,7 +25,6 @@ class ReflectionExtension extends NativeObject
             'version' => $reflection->getVersion(),
             'dependencies' => $reflection->getDependencies(),
             'iniEntries' => $reflection->getIniEntries(),
-            // @phpstan-ignore-next-line PHPStan bug
             'isPersistent' => $reflection->isPersistent(),
             'isTemporary' => $reflection->isTemporary(),
         ];

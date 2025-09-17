@@ -14,7 +14,7 @@ use BackedEnum;
 trait FormatterTrait
 {
     /**
-     * @var array<array<string|null>>
+     * @var array<array<string|Foreground|Background|Option|null>>
      */
     protected array $formatStack = [];
 
@@ -132,6 +132,7 @@ trait FormatterTrait
                 $args[1] = 'reset';
             }
 
+            // @phpstan-ignore-next-line
             $output .= $this->setFormat(...$args);
         }
 
