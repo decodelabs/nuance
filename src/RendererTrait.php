@@ -749,7 +749,10 @@ trait RendererTrait
         );
 
         foreach ($trace as $i => $frame) {
-            if (!$options->filter($frame)) {
+            if (
+                $i > 0 &&
+                !$options->filter($frame)
+            ) {
                 continue;
             }
 

@@ -557,7 +557,9 @@ class Html implements Renderer
         );
 
         foreach ($trace as $i => $frame) {
-            $filtered = !$options->filter($frame);
+            $filtered =
+                $i > 0 &&
+                !$options->filter($frame);
 
             $id = uniqid('frame-');
             $line = $sig = [];
