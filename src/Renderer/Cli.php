@@ -310,9 +310,10 @@ class Cli implements Renderer
     #----------------------------- Signatures ----------------------------
 
 
-    public function renderSignatureNamespace(
+    public function wrapSignatureNamespace(
         string $namespace,
         ?ClassList $classes = null,
+        ?string $fqn = null,
     ): string {
         return $this->format(
             content: $namespace,
@@ -320,9 +321,10 @@ class Cli implements Renderer
         );
     }
 
-    public function renderSignatureClassName(
+    public function wrapSignatureClassName(
         string $class,
         ?ClassList $classes = null,
+        ?string $fqn = null,
     ): string {
         return $this->format(
             content: $class,

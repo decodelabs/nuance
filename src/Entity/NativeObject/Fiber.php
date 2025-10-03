@@ -35,8 +35,7 @@ class Fiber extends NativeObject implements Traceable
 
             $this->file = $reflection->getExecutingFile();
             $this->startLine = $reflection->getExecutingLine();
-
-            $this->stackTrace = Trace::fromArray($reflection->getTrace());
+            $this->stackTrace = Trace::fromDebugBacktrace($reflection->getTrace());
         }
 
         $this->meta = [

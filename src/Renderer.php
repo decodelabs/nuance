@@ -23,8 +23,12 @@ use DecodeLabs\Nuance\Entity\NativeString;
 use DecodeLabs\Nuance\Structure\ClassList;
 use DecodeLabs\Nuance\Structure\Container;
 use DecodeLabs\Nuance\Structure\ListStyle;
+use DecodeLabs\Remnant\ClassIdentifier;
 use DecodeLabs\Remnant\Frame;
+use DecodeLabs\Remnant\FunctionIdentifier\Closure as ClosureFunction;
+use DecodeLabs\Remnant\Location;
 use DecodeLabs\Remnant\Trace;
+use DecodeLabs\Remnant\ViewOptions;
 
 interface Renderer
 {
@@ -177,12 +181,23 @@ interface Renderer
     ): string;
 
     public function renderStackFrameSignature(
-        Frame $frame
+        Frame $frame,
+        ViewOptions $options
+    ): string;
+
+    public function renderStackFrameArgument(
+        int|string $key,
+        mixed $value,
+        ViewOptions $options
+    ): string;
+
+    public function wrapStackFrameArgument(
+        string $argument,
+        ?ClassList $classes = null,
     ): string;
 
     public function renderStackFrameLocation(
-        ?string $file,
-        ?int $line = null,
+        ?Location $location,
         ?ClassList $classes = null,
     ): string;
 
@@ -210,18 +225,20 @@ interface Renderer
     ): string;
 
     public function renderSignatureFqn(
-        string $class,
+        ClassIdentifier $class,
         ?ClassList $classes = null,
     ): string;
 
-    public function renderSignatureNamespace(
+    public function wrapSignatureNamespace(
         string $namespace,
         ?ClassList $classes = null,
+        ?string $fqn = null,
     ): string;
 
-    public function renderSignatureClassName(
+    public function wrapSignatureClassName(
         string $class,
         ?ClassList $classes = null,
+        ?string $fqn = null,
     ): string;
 
     public function renderSignatureConstant(
@@ -235,6 +252,7 @@ interface Renderer
     ): string;
 
     public function renderSignatureClosure(
+        ClosureFunction $closure,
         ?ClassList $classes = null,
     ): string;
 

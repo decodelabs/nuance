@@ -22,7 +22,12 @@ use DecodeLabs\Nuance\Renderer;
 use DecodeLabs\Nuance\RendererTrait;
 use DecodeLabs\Nuance\Structure\ClassList;
 use DecodeLabs\Nuance\Structure\Container;
+use DecodeLabs\Remnant\ArgumentFormat;
+use DecodeLabs\Remnant\ClassIdentifier\Native as NativeClass;
+use DecodeLabs\Remnant\Filter\Vendor as VendorFilter;
+use DecodeLabs\Remnant\Location;
 use DecodeLabs\Remnant\Trace;
+use DecodeLabs\Remnant\ViewOptions;
 
 class Html implements Renderer
 {
@@ -296,9 +301,10 @@ class Html implements Renderer
         string $class,
         ?ClassList $classes = null,
     ): string {
+        /** @var class-string $class */
         return $this->el(
             tag: 'span',
-            content: $this->renderSignatureFqn($class),
+            content: $this->renderSignatureFqn(new NativeClass($class)),
             classes: ClassList::of('signature', 'source', $classes)
         );
     }
@@ -542,10 +548,20 @@ class Html implements Renderer
         $lines = [];
         $first = true;
 
+        $options = $trace->options ?? new ViewOptions(
+            argumentFormat: ArgumentFormat::NamedValues,
+            collapseSingleLineArguments: true,
+            filters: [
+                new VendorFilter(),
+            ]
+        );
+
         foreach ($trace as $i => $frame) {
+            $filtered = !$options->filter($frame);
+
             $id = uniqid('frame-');
             $line = $sig = [];
-            $line[] = '<label class="stack-frame group">';
+
             $line[] = $this->el(
                 tag: 'input',
                 content: null,
@@ -555,15 +571,15 @@ class Html implements Renderer
                     'checked' => $first
                 ]
             );
+
             $line[] = '<samp class="dump trace">';
 
             $sig[] = $this->renderStackFrameNumber($count - $i);
-            $sig[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
+            $sig[] = $this->wrapSignature($this->renderStackFrameSignature($frame, $options));
             $sig[] = "\n   ";
 
             $sig[] = $this->renderStackFrameLocation(
-                $frame->callingFile ?? $frame->file,
-                $frame->callingLine ?? $frame->line,
+                $frame->callSite ?? $frame->location
             );
 
             $line[] = implode(' ', $sig);
@@ -573,9 +589,12 @@ class Html implements Renderer
                 $line[] = $source;
             }
 
-            $line[] = '</label>';
+            $lines[] = $this->el(
+                tag: 'label',
+                content: implode("\n", $line),
+                classes: ClassList::of('stack-frame', 'group', $filtered ? 'filtered' : null)
+            );
 
-            $lines[] = implode("\n", $line);
             $first = false;
         }
 
@@ -585,6 +604,17 @@ class Html implements Renderer
         );
 
         return implode("\n", $output);
+    }
+
+    public function wrapStackFrameArgument(
+        string $argument,
+        ?ClassList $classes = null,
+    ): string {
+        return $this->el(
+            tag: 'div',
+            content: $argument,
+            classes: ClassList::of('argument', $classes)
+        );
     }
 
     public function renderStackFrameNumber(
@@ -599,20 +629,27 @@ class Html implements Renderer
     }
 
     public function renderStackFrameLocation(
-        ?string $file,
-        ?int $line = null,
+        ?Location $location,
         ?ClassList $classes = null,
     ): string {
         $output = [];
 
-        if ($file !== null) {
-            $output[] = $this->renderStackFrameFile(
-                $this->prettifyPath($file)
-            );
+        if ($location !== null) {
+            $file = $location->getPrettyFile();
+            $output[] = $this->renderStackFrameFile($file);
 
-            if ($line !== null) {
+            if ($location->line !== null) {
                 $output[] = $this->renderGrammar(':');
-                $output[] = $this->renderStackFrameLine($line);
+                $output[] = $this->renderStackFrameLine($location->line);
+            }
+
+            if ($location->evalLine !== null) {
+                $output[] = ' ';
+                $output[] = $this->renderGrammar('[');
+                $output[] = $this->renderIdentifier('eval');
+                $output[] = $this->renderGrammar(':');
+                $output[] = $this->renderStackFrameLine($location->evalLine);
+                $output[] = $this->renderGrammar(']');
             }
         } else {
             $output[] = $this->renderStackFrameFile(
@@ -623,7 +660,7 @@ class Html implements Renderer
 
         return $this->el(
             tag: 'span',
-            content: implode(' ', $output),
+            content: implode('', $output),
             classes: ClassList::of('location', $classes)
         );
     }
@@ -632,9 +669,24 @@ class Html implements Renderer
         string $file,
         ?ClassList $classes = null,
     ): string {
+        $content = '';
+
+        if (preg_match('/^(@[a-z]+):(.+)$/', $file, $matches)) {
+            $content = $this->el(
+                tag: 'span',
+                content: $matches[1],
+                classes: ClassList::of('identifier', 'definition-key', 'alias')
+            );
+
+            $content .= $this->renderGrammar(':');
+            $file = $matches[2];
+        }
+
+        $content .= $this->escape($file);
+
         return $this->el(
             tag: 'span',
-            content: $this->escape($file),
+            content: $content,
             classes: ClassList::of('file', $classes)
         );
     }
@@ -665,25 +717,33 @@ class Html implements Renderer
         );
     }
 
-    public function renderSignatureNamespace(
+    public function wrapSignatureNamespace(
         string $namespace,
         ?ClassList $classes = null,
+        ?string $fqn = null,
     ): string {
         return $this->el(
             tag: 'span',
             content: $this->escape($namespace),
-            classes: ClassList::of('namespace', $classes)
+            classes: ClassList::of('namespace', $classes),
+            attributes: [
+                'title' => $fqn,
+            ]
         );
     }
 
-    public function renderSignatureClassName(
+    public function wrapSignatureClassName(
         string $class,
         ?ClassList $classes = null,
+        ?string $fqn = null,
     ): string {
         return $this->el(
             tag: 'span',
-            content: $this->escape($class),
-            classes: ClassList::of('class', $classes)
+            content: $class,
+            classes: ClassList::of('class', $classes),
+            attributes: [
+                'title' => $fqn,
+            ]
         );
     }
 
@@ -783,7 +843,7 @@ class Html implements Renderer
     /**
      * @param array<string,mixed> $attributes
      */
-    private function el(
+    protected function el(
         string $tag,
         ?string $content = null,
         ?ClassList $classes = null,

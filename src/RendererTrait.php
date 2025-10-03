@@ -30,8 +30,19 @@ use DecodeLabs\Nuance\Structure\Container;
 use DecodeLabs\Nuance\Structure\ListStyle;
 use DecodeLabs\Nuance\Structure\Property;
 use DecodeLabs\Nuance\Structure\Section;
+use DecodeLabs\Remnant\ArgumentFormat;
+use DecodeLabs\Remnant\ClassIdentifier;
+use DecodeLabs\Remnant\ClassIdentifier\Anonymous as AnonymousClass;
+use DecodeLabs\Remnant\ClassIdentifier\Native as NativeClass;
+use DecodeLabs\Remnant\Filter\Vendor as VendorFilter;
 use DecodeLabs\Remnant\Frame;
+use DecodeLabs\Remnant\FunctionIdentifier\Closure as ClosureFunction;
+use DecodeLabs\Remnant\FunctionIdentifier\NamespaceFunction;
+use DecodeLabs\Remnant\FunctionIdentifier\ObjectMethod;
+use DecodeLabs\Remnant\FunctionIdentifier\StaticMethod;
+use DecodeLabs\Remnant\Location;
 use DecodeLabs\Remnant\Trace;
+use DecodeLabs\Remnant\ViewOptions;
 use UnexpectedValueException;
 
 /**
@@ -307,7 +318,8 @@ trait RendererTrait
         string $class,
         ?ClassList $classes = null,
     ): string {
-        return $this->renderSignatureFqn($class, $classes);
+        /** @var class-string $class */
+        return $this->renderSignatureFqn(new NativeClass($class), $classes);
     }
 
     public function renderControlCharacter(
@@ -548,8 +560,7 @@ trait RendererTrait
 
                 if ($file = $entity->file) {
                     $content[] = $this->renderStackFrameLocation(
-                        file: $this->prettifyPath($file),
-                        line: $entity->startLine,
+                        location: new Location($file, $entity->startLine),
                     );
                 }
 
@@ -730,19 +741,25 @@ trait RendererTrait
         $count = count($trace);
         $lines = [];
 
+        $options = $trace->options ?? new ViewOptions(
+            argumentFormat: ArgumentFormat::InlineValues,
+            filters: [
+                new VendorFilter(),
+            ]
+        );
+
         foreach ($trace as $i => $frame) {
+            if (!$options->filter($frame)) {
+                continue;
+            }
+
             $line = [];
             $line[] = $this->renderStackFrameNumber($count - $i);
             $line[] = $this->wrapSignature(
-                $this->renderStackFrameSignature($frame)
+                $this->renderStackFrameSignature($frame, $options)
             );
             $line[] = "\n   ";
-
-            $line[] = $this->renderStackFrameLocation(
-                file: $frame->callingFile,
-                line: $frame->callingLine,
-            );
-
+            $line[] = $this->renderStackFrameLocation($frame->callSite);
             $lines[] = implode(' ', $line);
         }
 
@@ -761,34 +778,43 @@ trait RendererTrait
     }
 
     public function renderStackFrameSignature(
-        Frame $frame
+        Frame $frame,
+        ViewOptions $options
     ): string {
         $output = [];
 
-        // Namespace
-        if (null !== ($class = $frame->class)) {
-            $class = $frame::normalizeClassName($class);
-
-            $output[] = $this->renderSignatureFqn($class);
-        }
-
         // Type
-        if ($frame->invokeType !== null) {
-            $output[] = $this->renderGrammar($frame->invokeType);
+        if (
+            $frame->function instanceof ObjectMethod ||
+            $frame->function instanceof StaticMethod
+        ) {
+            $output[] = $this->renderSignatureFqn($frame->function->class);
+            $output[] = $this->renderGrammar($frame->function->separator);
+        } elseif ($frame->function instanceof NamespaceFunction) {
+            $output[] = $this->wrapSignatureNamespace(
+                namespace: $frame->function->namespace,
+                fqn: (string)$frame->function
+            );
+
+            $output[] = $this->renderGrammar('\\');
         }
 
         // Function
-        $function = $frame->function;
-
-        if (
-            $function === null ||
-            str_contains($function, '{closure')
-        ) {
+        if ($frame->function instanceof ClosureFunction) {
             $output[] = $this->wrapSignatureFunction(
-                $this->renderSignatureClosure(),
+                $this->renderSignatureClosure($frame->function),
                 ClassList::of('closure')
             );
         } else {
+            $function = $frame->function->name;
+
+            if ($frame->function->isInternal()) {
+                $output[] = $this->renderGrammar('[');
+                $output[] = $this->renderIdentifier('internal');
+                $output[] = $this->renderGrammar(']');
+                $output[] = ' ';
+            }
+
             if (str_contains($function, ',')) {
                 $parts = explode(',', $function);
                 $parts = array_map('trim', $parts);
@@ -813,49 +839,160 @@ trait RendererTrait
 
         // Args
         $output[] = $this->renderGrammar('(');
-        $args = [];
 
-        foreach ($frame->arguments as $arg) {
-            if (is_object($arg)) {
-                $args[] = $this->renderSignatureObject(
-                    $frame::normalizeClassName(get_class($arg))
+        if ($options->argumentFormat === ArgumentFormat::Count) {
+            $output[] = $this->renderGrammar('…');
+            $output[] = $this->renderInteger(
+                new NativeInteger(count($frame->arguments))
+            );
+        } else {
+            $args = [];
+            $lastKey = array_key_last($frame->arguments->values);
+            $isList = array_is_list($frame->arguments->values);
+            $collapse = $options->argumentFormat === ArgumentFormat::InlineValues;
+
+            if (
+                $options->collapseSingleLineArguments &&
+                count($frame->arguments->values) === 1 &&
+                (
+                    strlen((string)$frame->function) < 40
+                )
+            ) {
+                $collapse = true;
+            }
+
+            foreach ($frame->arguments as $key => $arg) {
+                $argString = $this->renderStackFrameArgument(
+                    key: $key,
+                    value: $arg,
+                    options: $options
                 );
-            } elseif (is_array($arg)) {
-                $args[] = $this->wrapSignatureArray(
-                    $this->renderGrammar('[') . count($arg) . $this->renderGrammar(']')
-                );
-            } elseif (is_string($arg)) {
-                $args[] = $this->renderString(
-                    new NativeString($arg),
-                    singleLineMax: 16
-                );
-            } elseif (is_resource($arg)) {
-                $args[] = $this->renderSignatureResource($arg);
+
+                if ($options->argumentFormat === ArgumentFormat::NamedValues) {
+                    if (!$isList) {
+                        if (
+                            $collapse &&
+                            strlen((string)$key) + strlen((string)$argString) > 40
+                        ) {
+                            $collapse = false;
+                        }
+
+                        $argString =
+                            $this->renderIdentifier(
+                                identifier: (string)$key,
+                                classes: ClassList::of('argument-name')
+                            ) .
+                            $this->renderGrammar(':') .
+                            ' ' .
+                            $argString;
+                    }
+
+                    if ($lastKey !== $key) {
+                        $argString .= $this->renderGrammar(',');
+                    }
+
+                    if (!$collapse) {
+                        $argString = $this->wrapStackFrameArgument(
+                            $argString,
+                            classes: ClassList::of('argument')
+                        );
+                    }
+                }
+
+                $args[] = $argString;
+            }
+
+            if ($collapse) {
+                $output[] = implode($this->renderGrammar(', ') . ' ', $args);
             } else {
-                $args[] = $this->renderValue($arg);
+                $output[] = implode("\n", $args);
             }
         }
 
-        $output[] = implode($this->renderGrammar(', ') . ' ', $args);
         $output[] = $this->renderGrammar(')');
-
         return implode('', $output);
     }
 
+    public function wrapStackFrameArgument(
+        string $argument,
+        ?ClassList $classes = null,
+    ): string {
+        return $argument;
+    }
+
+    public function renderStackFrameArgument(
+        int|string $key,
+        mixed $value,
+        ViewOptions $options
+    ): string {
+        if ($options->redact?->__invoke((string)$key, $value)) {
+            return $this->renderIdentifier(
+                identifier: 'sensitive',
+                classes: ClassList::of('sensitive')
+            );
+        }
+
+        if (is_object($value)) {
+            $class = Frame::createClassIdentifier(get_class($value), $value);
+            $output = $this->renderSignatureFqn($class);
+
+            if ($options->argumentFormat === ArgumentFormat::NamedValues) {
+                $output = $this->renderIdentifier(
+                    identifier: 'object',
+                    classes: ClassList::of('keyword')
+                ) .
+                $this->renderGrammar('(') . $output . $this->renderGrammar(')');
+            }
+
+            return $output;
+        }
+
+        if (is_array($value)) {
+            return $this->wrapSignatureArray(
+                $this->renderIdentifier(
+                    identifier: 'array',
+                    classes: ClassList::of('keyword')
+                ) .
+                $this->renderGrammar('(') . count($value) . $this->renderGrammar(')')
+            );
+        }
+
+        if (is_string($value)) {
+            return $this->renderString(
+                new NativeString($value),
+                singleLineMax: 16
+            );
+        }
+
+        if (is_resource($value)) {
+            return $this->renderSignatureResource($value);
+        }
+
+        return $this->renderValue($value);
+    }
+
     public function renderStackFrameLocation(
-        ?string $file,
-        ?int $line = null,
+        ?Location $location,
         ?ClassList $classes = null,
     ): string {
         $output = [];
 
-        if ($file !== null) {
-            $output[] = $this->renderStackFrameFile(
-                $this->prettifyPath($file)
-            );
+        if ($location !== null) {
+            $file = $location->getPrettyFile();
+            $output[] = $this->renderStackFrameFile($file);
 
-            if ($line !== null) {
-                $output[] = $this->renderStackFrameLine($line);
+            if ($location->line !== null) {
+                $output[] = $this->renderGrammar(':');
+                $output[] = $this->renderStackFrameLine($location->line);
+            }
+
+            if ($location->evalLine !== null) {
+                $output[] = ' ';
+                $output[] = $this->renderGrammar('[');
+                $output[] = $this->renderIdentifier('eval');
+                $output[] = $this->renderGrammar(':');
+                $output[] = $this->renderStackFrameLine($location->evalLine);
+                $output[] = $this->renderGrammar(']');
             }
         } else {
             $output[] = $this->renderStackFrameFile(
@@ -864,7 +1001,7 @@ trait RendererTrait
             );
         }
 
-        return implode(' ', $output);
+        return implode('', $output);
     }
 
     public function renderStackFrameFile(
@@ -900,45 +1037,77 @@ trait RendererTrait
     }
 
     public function renderSignatureFqn(
-        string $class,
+        ClassIdentifier $class,
         ?ClassList $classes = null,
     ): string {
         $output = [];
 
-        if (str_starts_with($class, '~')) {
-            $class = ltrim($class, '~');
-            $output[] = $this->renderPointer('~');
+        if ($class instanceof AnonymousClass) {
+            $output[] = $this->renderGrammar('{');
+            $output[] = $this->renderIdentifier('anonymous');
+
+            if ($class->location !== null) {
+                $output[] = $this->renderGrammar(':');
+                $output[] = $this->renderStackFrameLocation($class->location);
+            }
+
+            $output[] = $this->renderGrammar('}');
+
+            return $this->wrapSignatureClassName(
+                class: implode('', $output),
+                fqn: (string)$class
+            );
         }
 
-        $parts = explode('\\', $class);
-        $class = array_pop($parts);
+        if ($class instanceof NativeClass) {
+            $className = $class->name;
 
-        if (!empty($parts)) {
-            $parts[] = '';
+            if (str_starts_with($className, '~')) {
+                $className = ltrim($className, '~');
+                $output[] = $this->renderPointer('~');
+            }
+
+            $parts = explode('\\', $className);
+            $className = array_pop($parts);
+
+            if (!empty($parts)) {
+                $parts[] = '';
+            }
+
+            foreach ($parts as $i => $part) {
+                $parts[$i] = empty($part) ?
+                    null :
+                    $this->wrapSignatureNamespace(
+                        namespace: $part,
+                        fqn: (string)$class
+                    );
+            }
+
+            $output[] = implode($this->renderGrammar('\\'), $parts);
+
+            $output[] = $this->wrapSignatureClassName(
+                class: $className,
+                fqn: (string)$class
+            );
+        } else {
+            $output[] = $class->render();
         }
-
-        foreach ($parts as $i => $part) {
-            $parts[$i] = empty($part) ?
-                null :
-                $this->renderSignatureNamespace($part);
-        }
-
-        $output[] = implode($this->renderGrammar('\\'), $parts);
-        $output[] = $this->renderSignatureClassName($class);
 
         return implode('', $output);
     }
 
-    public function renderSignatureNamespace(
+    public function wrapSignatureNamespace(
         string $namespace,
         ?ClassList $classes = null,
+        ?string $fqn = null,
     ): string {
         return $namespace;
     }
 
-    public function renderSignatureClassName(
+    public function wrapSignatureClassName(
         string $class,
         ?ClassList $classes = null,
+        ?string $fqn = null,
     ): string {
         return $class;
     }
@@ -958,9 +1127,20 @@ trait RendererTrait
     }
 
     public function renderSignatureClosure(
+        ClosureFunction $closure,
         ?ClassList $classes = null,
     ): string {
-        return 'closure';
+        $output = [];
+        $output[] = $this->renderGrammar('{');
+        $output[] = $this->renderIdentifier('closure');
+
+        if ($closure->location !== null) {
+            $output[] = $this->renderGrammar(':');
+            $output[] = $this->renderStackFrameLocation($closure->location);
+        }
+
+        $output[] = $this->renderGrammar('}');
+        return implode('', $output);
     }
 
     public function wrapSignatureArray(
@@ -1012,14 +1192,21 @@ trait RendererTrait
             }
 
             foreach ($parts as $i => $part) {
-                $parts[$i] = empty($part) ? null : $this->renderSignatureNamespace($part);
+                $parts[$i] = empty($part) ? null : $this->wrapSignatureNamespace(
+                    namespace: $part,
+                    fqn: $const
+                );
             }
 
             $output[] = implode($this->renderGrammar('\\'), $parts);
         }
 
         if ($class !== null) {
-            $output[] = $this->renderSignatureClassName($class);
+            $output[] = $this->wrapSignatureClassName(
+                class: $class,
+                fqn: $const
+            );
+
             $output[] = $this->renderGrammar('::');
         }
 
