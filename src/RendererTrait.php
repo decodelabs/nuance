@@ -733,7 +733,6 @@ trait RendererTrait
 
     #----------------------------- Stack Frames ----------------------------
 
-
     public function renderStackTrace(
         Trace $trace,
         ?ClassList $classes = null,
@@ -743,9 +742,6 @@ trait RendererTrait
 
         $options = $trace->options ?? new ViewOptions(
             argumentFormat: ArgumentFormat::InlineValues,
-            filters: [
-                new VendorFilter(),
-            ]
         );
 
         foreach ($trace as $i => $frame) {
