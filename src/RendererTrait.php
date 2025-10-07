@@ -34,7 +34,6 @@ use DecodeLabs\Remnant\ArgumentFormat;
 use DecodeLabs\Remnant\ClassIdentifier;
 use DecodeLabs\Remnant\ClassIdentifier\Anonymous as AnonymousClass;
 use DecodeLabs\Remnant\ClassIdentifier\Native as NativeClass;
-use DecodeLabs\Remnant\Filter\Vendor as VendorFilter;
 use DecodeLabs\Remnant\Frame;
 use DecodeLabs\Remnant\FunctionIdentifier\Closure as ClosureFunction;
 use DecodeLabs\Remnant\FunctionIdentifier\NamespaceFunction;
