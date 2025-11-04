@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @package Nuance
- * @license http://opensource.org/licenses/MIT
+ * Nuance
+ * @license https://opensource.org/licenses/MIT
  */
 
 declare(strict_types=1);
@@ -11,7 +11,6 @@ namespace DecodeLabs\Nuance\Entity\NativeObject;
 
 use DecodeLabs\Nuance\Entity\ConstOption;
 use DecodeLabs\Nuance\Entity\NativeObject;
-
 use DOMNode as DOMNodeObject;
 
 class DOMNode extends NativeObject
