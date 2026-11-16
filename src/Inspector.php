@@ -272,7 +272,6 @@ class Inspector
                     continue;
                 }
 
-                $property->setAccessible(true);
                 $name = $property->getName();
 
                 if (in_array($name, $blackList)) {

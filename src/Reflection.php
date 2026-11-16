@@ -83,7 +83,6 @@ class Reflection
         $output = implode(' ', ReflectionRoot::getModifierNames($reflection->getModifiers()));
         $name = $reflection->getName();
         $output .= ' $' . $name . ' = ';
-        $reflection->setAccessible(true);
         $props = $reflection->getDeclaringClass()->getDefaultProperties();
         $value = $props[$name] ?? null;
         $output .= self::renderStaticValue($value);
