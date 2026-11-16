@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
---
+- Avoided null array keys when reading the first value from an empty object entity
+- Avoided null array keys when inspecting and rendering empty arrays on PHP 8.5
 
 ---
 

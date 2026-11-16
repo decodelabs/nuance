@@ -116,7 +116,10 @@ class NativeObject implements Structured
     public bool $valueKeys = true;
 
     public mixed $value {
-        get => $this->values[array_key_first($this->values)] ?? null;
+        get {
+            $key = array_key_first($this->values);
+            return $key === null ? null : $this->values[$key];
+        }
         set {
             $this->values = [$value];
             $this->valueKeys = false;

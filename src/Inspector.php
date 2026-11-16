@@ -118,12 +118,13 @@ class Inspector
         // Array
         if (is_array($value)) {
             $entity = new NativeArray($value);
+            $hash = $entity->hash ?? '';
 
-            if (!isset($this->arrayIds[$entity->hash])) {
-                $this->arrayIds[$entity->hash] = count($this->arrayIds);
+            if (!isset($this->arrayIds[$hash])) {
+                $this->arrayIds[$hash] = count($this->arrayIds);
             }
 
-            $entity->referenceId = $this->arrayIds[$entity->hash];
+            $entity->referenceId = $this->arrayIds[$hash];
             return $entity;
         }
 
